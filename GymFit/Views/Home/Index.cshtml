@@ -1,0 +1,626 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold text-white mb-4">
+                    TRANSFORM YOUR <span class="text-danger">BODY</span>
+                </h1>
+                <p class="lead text-white-50 mb-4">
+                    Join the ultimate fitness revolution. State-of-the-art equipment,
+                    expert trainers, and a community that pushes you to your limits.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/Account/Register" class="btn btn-danger btn-lg px-5">
+                        <i class="fas fa-bolt"></i> START NOW
+                    </a>
+                    <a href="/Home/Plans" class="btn btn-outline-light btn-lg px-5">
+                        View Plans
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <h2 class="text-danger fw-bold">500+</h2>
+                        <p>Active Members</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2 class="text-danger fw-bold">20+</h2>
+                        <p>Expert Trainers</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2 class="text-danger fw-bold">24/7</h2>
+                        <p>Open Hours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Owner Message Section -->
+<section class="owner-section py-5 bg-dark">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4">
+                <div class="owner-poster">
+                    <div class="poster-frame">
+                        <div class="owner-image">
+                            <i class="fas fa-user-tie fa-8x text-danger"></i>
+                            <div class="owner-badge">
+                                <i class="fas fa-crown"></i> FOUNDER
+                            </div>
+                        </div>
+                    </div>
+                    <div class="owner-info">
+                        <h3 class="text-white mb-1">Michael Anderson</h3>
+                        <p class="text-danger mb-0">CEO & Founder</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="owner-message">
+                    <span class="section-badge">FROM THE FOUNDER</span>
+                    <h2 class="display-4 fw-bold text-white mb-4">
+                        Building <span class="text-danger">Champions</span> Since 2020
+                    </h2>
+                    <p class="lead text-white-50 mb-4">
+                        "I started GymFit with a simple vision: create a space where anyone,
+                        regardless of their fitness level, could achieve their dreams. Today,
+                        we're proud to be the #1 rated fitness center in the city."
+                    </p>
+                    <div class="owner-signature">
+                        <div class="signature-line text-danger">Michael Anderson</div>
+                        <p class="text-white-50 small mb-0">Former Olympic Athlete | Certified Personal Trainer</p>
+                    </div>
+                    <div class="mt-4">
+                        <button class="btn btn-danger btn-lg" data-bs-toggle="modal" data-bs-target="#ownerVideoModal">
+                            <i class="fas fa-play-circle"></i> Watch My Story
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Promotional Posters Section -->
+<section class="posters-section py-5" style="background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4 fw-bold text-white">
+                Your Journey <span class="text-danger">Starts Here</span>
+            </h2>
+            <p class="lead text-white-50">Experience the difference at GymFit</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Poster 1: Transformation -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-1">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <i class="fas fa-medal fa-4x text-danger mb-3"></i>
+                            <h3 class="text-white fw-bold mb-3">TRANSFORM IN 90 DAYS</h3>
+                            <p class="text-white-50 mb-4">
+                                Join our proven transformation program and see real results.
+                                Personalized coaching, nutrition plans, and 24/7 support.
+                            </p>
+                            <div class="poster-badge">LIMITED SPOTS</div>
+                            <a href="/Home/Plans" class="btn btn-danger mt-3">
+                                <i class="fas fa-rocket"></i> Start Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster 2: Free Trial -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-2">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <div class="offer-circle">
+                                <div class="offer-text">
+                                    <span class="offer-number">7</span>
+                                    <span class="offer-label">DAYS FREE</span>
+                                </div>
+                            </div>
+                            <h3 class="text-white fw-bold mb-3">TRY US FREE</h3>
+                            <p class="text-white-50 mb-4">
+                                No commitment. No credit card. Experience world-class facilities
+                                and expert trainers for a full week.
+                            </p>
+                            <div class="poster-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle text-danger"></i>
+                                    <span>All Equipment Access</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle text-danger"></i>
+                                    <span>Group Classes</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle text-danger"></i>
+                                    <span>Free Consultation</span>
+                                </div>
+                            </div>
+                            <a href="/Account/Register" class="btn btn-outline-light mt-3">
+                                <i class="fas fa-gift"></i> Claim Free Trial
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster 3: Student Discount -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-3">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <div class="discount-tag">
+                                <span class="discount-percent">25%</span>
+                                <span class="discount-label">OFF</span>
+                            </div>
+                            <h3 class="text-white fw-bold mb-3">STUDENT DISCOUNT</h3>
+                            <p class="text-white-50 mb-4">
+                                We believe in investing in the future. Students get 25% off
+                                all membership plans with valid ID.
+                            </p>
+                            <div class="poster-badge">VALID STUDENT ID REQUIRED</div>
+                            <a href="/Home/Plans" class="btn btn-danger mt-3">
+                                <i class="fas fa-graduation-cap"></i> Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster 4: Referral Program -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-4">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <i class="fas fa-users fa-4x text-danger mb-3"></i>
+                            <h3 class="text-white fw-bold mb-3">BRING A FRIEND</h3>
+                            <p class="text-white-50 mb-4">
+                                Refer a friend and both get 1 month FREE! Plus, earn rewards
+                                for every successful referral.
+                            </p>
+                            <div class="reward-box">
+                                <span class="reward-amount">$50</span>
+                                <span class="reward-text">Per Referral</span>
+                            </div>
+                            <a href="/Account/Register" class="btn btn-outline-light mt-3">
+                                <i class="fas fa-share-alt"></i> Start Referring
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster 5: Personal Training -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-5">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <i class="fas fa-dumbbell fa-4x text-danger mb-3"></i>
+                            <h3 class="text-white fw-bold mb-3">1-ON-1 TRAINING</h3>
+                            <p class="text-white-50 mb-4">
+                                Work with elite trainers who have helped Olympic athletes
+                                and celebrities achieve their goals.
+                            </p>
+                            <div class="trainer-stats">
+                                <div class="stat-item">
+                                    <strong class="text-danger">15+</strong>
+                                    <span>Years Exp</span>
+                                </div>
+                                <div class="stat-item">
+                                    <strong class="text-danger">500+</strong>
+                                    <span>Success Stories</span>
+                                </div>
+                            </div>
+                            <a href="/Home/Trainers" class="btn btn-danger mt-3">
+                                <i class="fas fa-calendar-check"></i> Book Session
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poster 6: Corporate Wellness -->
+            <div class="col-lg-4 col-md-6">
+                <div class="promo-poster poster-6">
+                    <div class="poster-overlay">
+                        <div class="poster-content">
+                            <i class="fas fa-building fa-4x text-danger mb-3"></i>
+                            <h3 class="text-white fw-bold mb-3">CORPORATE PLANS</h3>
+                            <p class="text-white-50 mb-4">
+                                Invest in your team's health. Special rates for companies
+                                with 10+ employees. Boost productivity and morale.
+                            </p>
+                            <div class="corporate-benefits">
+                                <div>✓ Flexible Schedules</div>
+                                <div>✓ Team Building Events</div>
+                                <div>✓ Wellness Workshops</div>
+                            </div>
+                            <a href="/Home/Contact" class="btn btn-outline-light mt-3">
+                                <i class="fas fa-briefcase"></i> Contact Us
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section (Existing) -->
+<section class="features-section py-5 bg-dark">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-dumbbell fa-3x text-danger mb-3"></i>
+                    <h3 class="text-white">Premium Equipment</h3>
+                    <p class="text-white-50">State-of-the-art machines and free weights</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-users fa-3x text-danger mb-3"></i>
+                    <h3 class="text-white">Expert Trainers</h3>
+                    <p class="text-white-50">Certified professionals to guide your journey</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                    <h3 class="text-white">Group Classes</h3>
+                    <p class="text-white-50">Motivating group sessions for all levels</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Owner Video Modal -->
+<div class="modal fade" id="ownerVideoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Founder's Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="video-placeholder">
+                    <i class="fas fa-play-circle fa-5x text-danger mb-3"></i>
+                    <p class="text-white-50">Video player would be embedded here</p>
+                    <p class="text-white-50 small">(YouTube/Vimeo integration)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Owner Section */
+        .owner-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .owner-poster {
+            text-align: center;
+        }
+
+        .poster-frame {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.2) 100%);
+            border: 3px solid #dc3545;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(220, 53, 69, 0.3);
+        }
+
+        .owner-image {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid #dc3545;
+            position: relative;
+        }
+
+        .owner-badge {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
+        }
+
+        .owner-info {
+            margin-top: 2rem;
+        }
+
+        .owner-message {
+            padding: 2rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .owner-signature {
+            border-left: 4px solid #dc3545;
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .signature-line {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+
+        /* Promotional Posters */
+        .promo-poster {
+            height: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .poster-1 {
+            background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 100%);
+        }
+
+        .poster-2 {
+            background: linear-gradient(135deg, #1a1a1a 0%, #c82333 100%);
+        }
+
+        .poster-3 {
+            background: linear-gradient(135deg, #1a1a1a 0%, #bd2130 100%);
+        }
+
+        .poster-4 {
+            background: linear-gradient(135deg, #2a2a2a 0%, #dc3545 100%);
+        }
+
+        .poster-5 {
+            background: linear-gradient(135deg, #1a1a1a 0%, #a71d2a 100%);
+        }
+
+        .poster-6 {
+            background: linear-gradient(135deg, #2a2a2a 0%, #c82333 100%);
+        }
+
+        .promo-poster:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(220, 53, 69, 0.4);
+        }
+
+        .poster-overlay {
+            background: rgba(0, 0, 0, 0.3);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .promo-poster:hover .poster-overlay {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .poster-content {
+            text-align: center;
+        }
+
+        .poster-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .offer-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            background: rgba(220, 53, 69, 0.2);
+            border: 4px solid #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .offer-text {
+            text-align: center;
+        }
+
+        .offer-number {
+            display: block;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #dc3545;
+            line-height: 1;
+        }
+
+        .offer-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .discount-tag {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            background: #dc3545;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.5);
+        }
+
+        .discount-percent {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            transform: rotate(-45deg);
+            line-height: 1;
+        }
+
+        .discount-label {
+            display: block;
+            font-size: 1rem;
+            color: white;
+            transform: rotate(-45deg);
+        }
+
+        .poster-features {
+            text-align: left;
+            margin: 1rem auto;
+            max-width: 250px;
+        }
+
+        .feature-item {
+            padding: 0.5rem 0;
+            color: #f8f9fa;
+        }
+
+            .feature-item i {
+                margin-right: 0.5rem;
+            }
+
+        .reward-box {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .reward-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #dc3545;
+            line-height: 1;
+        }
+
+        .reward-text {
+            color: #f8f9fa;
+            font-size: 0.9rem;
+        }
+
+        .trainer-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+        }
+
+            .trainer-stats .stat-item {
+                text-align: center;
+            }
+
+            .trainer-stats strong {
+                display: block;
+                font-size: 1.5rem;
+            }
+
+            .trainer-stats span {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.8rem;
+            }
+
+        .corporate-benefits {
+            text-align: left;
+            margin: 1rem auto;
+            max-width: 250px;
+            color: #f8f9fa;
+        }
+
+            .corporate-benefits div {
+                padding: 0.3rem 0;
+            }
+
+        .video-placeholder {
+            height: 400px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        @@keyframes pulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .promo-poster
+
+        {
+            height: 400px;
+        }
+
+        .owner-image {
+            width: 200px;
+            height: 200px;
+        }
+
+        }
+    </style>
+}

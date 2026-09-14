@@ -1,0 +1,386 @@
+﻿@model GymFit.Application.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - GymFit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="auth-page">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-md-6">
+                <div class="auth-card">
+                    <div class="text-center mb-4">
+                        <h1 class="fw-bold">
+                            <i class="fas fa-dumbbell text-danger"></i> GYM<span class="text-danger">FIT</span>
+                        </h1>
+                        <p class="text-white-50">Start your fitness journey today!</p>
+                    </div>
+
+                    <form id="registerForm" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label text-white"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label text-white"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label text-white"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label text-white"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DateOfBirth" class="form-label text-white"></label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label text-white"></label>
+                            <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmergencyContact" class="form-label text-white"></label>
+                            <input asp-for="EmergencyContact" class="form-control" />
+                            <span asp-validation-for="EmergencyContact" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Password" class="form-label text-white"></label>
+                                <input asp-for="Password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label text-white"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 py-2 mt-3">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="text-white-50">
+                            Already have an account?
+                            <a href="/Account/Login" class="text-danger">Login here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/ajaxHelper.js"></script>
+    <script src="~/js/toast.js"></script>
+    <script>
+        $('#registerForm').on('submit', function(e) {
+            e.preventDefault();
+            const btn = $(this).find('button[type="submit"]');
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating account...');
+
+            ajaxHelper.post('/Account/Register', $(this).serialize(), function(response) {
+                if (response.success) {
+                    showToast('success', 'Registration successful! Redirecting...');
+                    setTimeout(() => window.location.href = response.redirectUrl, 1000);
+                } else {
+                    showToast('error', response.message);
+                    btn.prop('disabled', false).html('<i class="fas fa-user-plus"></i> Create Account');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+<!-- CSS: GymFit.Web/wwwroot/css/gym-theme.css -->
+<style>
+    :root {
+        --primary-dark: #1a1a1a;
+        --secondary-dark: #2a2a2a;
+        --danger-color: #dc3545;
+        --text-light: #f8f9fa;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--primary-dark);
+        color: var(--text-light);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(220,53,69,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)" /></svg>');
+        opacity: 0.3;
+    }
+
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(220, 53, 69, 0.1);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 2px solid var(--danger-color);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .stat-card h2 {
+        margin: 0;
+        font-size: 3rem;
+    }
+
+    .stat-card p {
+        margin: 0;
+        color: var(--text-light);
+    }
+
+    /* Feature Section */
+    .features-section {
+        background: var(--secondary-dark);
+    }
+
+    .feature-box {
+        padding: 2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-box:hover {
+        transform: scale(1.05);
+    }
+
+    /* Pricing Cards */
+    .pricing-card {
+        background: var(--secondary-dark);
+        border: 2px solid #444;
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pricing-card.featured {
+        border-color: var(--danger-color);
+        box-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
+    }
+
+    .badge-popular {
+        position: absolute;
+        top: 20px;
+        right: -35px;
+        background: var(--danger-color);
+        color: white;
+        padding: 5px 40px;
+        transform: rotate(45deg);
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .price-tag {
+        font-size: 3rem;
+        font-weight: bold;
+        color: var(--danger-color);
+    }
+
+    .price-tag sup {
+        font-size: 1.5rem;
+        top: -1rem;
+    }
+
+    .price-tag sub {
+        font-size: 1rem;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .features-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #444;
+        color: var(--text-light);
+    }
+
+    /* Auth Pages */
+    .auth-page {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        min-height: 100vh;
+    }
+
+    .auth-card {
+        background: var(--secondary-dark);
+        border: 2px solid #444;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #444;
+        color: var(--text-light);
+        padding: 0.75rem;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: var(--danger-color);
+        color: var(--text-light);
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Contact Form */
+    .contact-form-box {
+        background: var(--secondary-dark);
+        border: 2px solid #444;
+        border-radius: 20px;
+        padding: 3rem;
+    }
+
+    /* Member Dashboard */
+    .member-card {
+        background: var(--secondary-dark);
+        border: 2px solid #444;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .member-card:hover {
+        border-color: var(--danger-color);
+        transform: translateY(-5px);
+    }
+
+    .member-card h3 {
+        color: var(--text-light);
+        margin: 1rem 0;
+    }
+
+    .info-card {
+        background: var(--secondary-dark);
+        border: 2px solid #444;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero-section {
+            text-align: center;
+        }
+
+        .hero-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card h2 {
+            font-size: 2rem;
+        }
+
+        .auth-card {
+            padding: 2rem;
+        }
+    }
+
+    /* Animations */
+   @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stat-card, .feature-box, .pricing-card, .member-card {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    /* Buttons */
+    .btn-danger {
+        background: var(--danger-color);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-outline-light {
+        border: 2px solid var(--text-light);
+        color: var(--text-light);
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+    }
+
+    .btn-outline-light:hover {
+        background: var(--text-light);
+        color: var(--primary-dark);
+    }
+</style>

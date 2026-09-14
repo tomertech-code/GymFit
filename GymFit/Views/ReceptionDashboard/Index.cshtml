@@ -1,0 +1,16 @@
+@model GymFit.Application.ViewModels.ReceptionDashboardViewModel
+@{
+    ViewData["Title"] = "Reception Dashboard";
+}
+<div class="container py-5">
+    <div class="mb-4"><h1 class="display-6 fw-bold">Reception dashboard</h1><p class="text-muted">Front-desk operations overview.</p></div>
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Today's check-ins</div><div class="display-5 fw-bold">@Model.TodayCheckIns</div></div></div></div>
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Active members</div><div class="display-5 fw-bold">@Model.ActiveMembers</div></div></div></div>
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Expired memberships</div><div class="display-5 fw-bold text-danger">@Model.ExpiredMemberships</div></div></div></div>
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Unread enquiries</div><div class="display-5 fw-bold">@Model.NewEnquiries</div></div></div></div>
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Today's payments</div><div class="display-5 fw-bold">@Model.TodayPayments</div></div></div></div>
+        <div class="col-sm-6 col-xl-4"><div class="card shadow-sm h-100"><div class="card-body"><div class="text-muted">Expiring within 30 days</div><div class="display-5 fw-bold">@Model.ExpiringSoon</div></div></div></div>
+    </div>
+    <div class="d-flex flex-wrap gap-2"><a class="btn btn-danger" asp-controller="Members" asp-action="Create">Register member</a><a class="btn btn-outline-secondary" asp-controller="Members" asp-action="Index">Search members</a><a class="btn btn-outline-secondary" asp-controller="Attendance" asp-action="Index">Attendance</a><a class="btn btn-outline-secondary" asp-controller="Payments" asp-action="Index">Payments</a><a class="btn btn-outline-secondary" asp-controller="Enquiries" asp-action="Index">Enquiries</a></div>
+</div>

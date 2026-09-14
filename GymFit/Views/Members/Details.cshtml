@@ -1,0 +1,3 @@
+@model GymFit.Application.DTOs.MemberDto
+@{ ViewData["Title"] = "Member Details"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+<div class="container py-4"><h1 class="h2">Member details</h1><div class="card card-body mt-3"><h3>@Model.FirstName @Model.LastName</h3><p class="mb-1">@Model.Email</p><p class="mb-1">@Model.PhoneNumber</p><p class="mb-1">Joined @Model.JoinDate.ToString("dd MMM yyyy")</p><p class="mb-1">Address: @Model.Address</p><p>Trainer: @(Model.AssignedTrainerName ?? "Unassigned")</p><a asp-action="Index" class="btn btn-outline-secondary align-self-start">Back</a></div></div>

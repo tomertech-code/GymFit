@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GymFit Admin</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body class="admin-body">
+
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-controller="AdminDashboard" asp-action="Index">
+                <i class="fas fa-dumbbell text-danger"></i> GymFit Admin
+            </a>
+            <div class="d-flex">
+                <span class="text-white me-3">@User.Identity?.Name</span>
+                <form method="post" asp-controller="Account" asp-action="Logout">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-controller="@(User.IsInRole("Reception") ? "ReceptionDashboard" : "AdminDashboard")" asp-action="Index">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Memberships" asp-action="Index">
+                                <i class="fas fa-id-card"></i> Memberships
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Members" asp-action="Index">
+                                <i class="fas fa-users"></i> Members
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Trainers" asp-action="GetAllTrainers">
+                                <i class="fas fa-user-tie"></i> Trainers
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Attendance" asp-action="Index">
+                                <i class="fas fa-clipboard-check"></i> Attendance
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Payments" asp-action="Index">
+                                <i class="fas fa-dollar-sign"></i> Payments
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="MembershipPlans" asp-action="Index">
+                                <i class="fas fa-tags"></i> Plans
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Branches" asp-action="Index">
+                                <i class="fas fa-building"></i> Branches
+                            </a>
+                        </li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Enquiries" asp-action="Index">
+                                <i class="fas fa-envelope"></i> Enquiries
+                            </a>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                @RenderBody()
+            </main>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+
+    <script src="~/js/ajaxHelper.js"></script>
+    <script src="~/js/toast.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

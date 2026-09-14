@@ -1,0 +1,9 @@
+@model GymFit.Application.ViewModels.TrainerDashboardViewModel
+@{
+    ViewData["Title"] = "Trainer Dashboard";
+}
+<div class="container py-5">
+    <div class="mb-4"><h1 class="display-6 fw-bold">Trainer dashboard</h1><p class="text-muted">Only members assigned to you are shown.</p></div>
+    <div class="row g-4 mb-4"><div class="col-md-6"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Assigned members</div><div class="display-5 fw-bold">@Model.AssignedMemberCount</div></div></div></div><div class="col-md-6"><div class="card shadow-sm"><div class="card-body"><div class="text-muted">Today's assigned-member attendance</div><div class="display-5 fw-bold">@Model.TodayAttendance</div></div></div></div></div>
+    <div class="card shadow-sm"><div class="card-header"><h2 class="h5 mb-0">My members</h2></div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Name</th><th>Email</th><th>Membership</th><th></th></tr></thead><tbody>@if (Model.AssignedMembers.Count == 0){<tr><td colspan="4" class="text-center py-4">No members are currently assigned to you.</td></tr>}@foreach (var member in Model.AssignedMembers){<tr><td>@member.FullName</td><td>@member.Email</td><td>@(member.CurrentPlan ?? "No active plan")</td><td><a class="btn btn-sm btn-outline-danger" asp-action="MemberDetails" asp-route-id="@member.Id">View details</a></td></tr>}</tbody></table></div></div>
+</div>

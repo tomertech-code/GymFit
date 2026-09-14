@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4" id="statsCards">
+    <div class="col-md-3">
+        <div class="stat-card bg-primary">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-content">
+                <h3 id="totalMembers">0</h3>
+                <p>Total Members</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-success">
+            <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-content">
+                <h3 id="activeMembers">0</h3>
+                <p>Active Members</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-warning">
+            <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div class="stat-content">
+                <h3 id="todayAttendance">0</h3>
+                <p>Today's Attendance</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-danger">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-content">
+                <h3 id="monthlyRevenue">$0</h3>
+                <p>Monthly Revenue</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Revenue Chart</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Members</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush" id="recentMembersList">
+                    <li class="list-group-item">Loading...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let revenueChart;
+
+        $(document).ready(function() {
+            loadDashboardStats();
+        });
+
+        function loadDashboardStats() {
+            ajaxHelper.get('/Admin/Dashboard/GetStats', function(data) {
+                $('#totalMembers').text(data.totalMembers);
+                $('#activeMembers').text(data.activeMembers);
+                $('#todayAttendance').text(data.todayAttendance);
+                $('#monthlyRevenue').text('$' + data.monthlyRevenue.toFixed(2));
+
+                // Update recent members list
+                let membersList = '';
+                data.recentMembers.forEach(function(member) {
+                    membersList += `
+                        <li class="list-group-item">
+                            <strong>${member.name}</strong><br>
+                            <small class="text-muted">${member.plan}</small>
+                        </li>
+                    `;
+                });
+                $('#recentMembersList').html(membersList);
+
+                // Create revenue chart
+                createRevenueChart(data.revenueChart);
+            });
+        }
+
+        function createRevenueChart(data) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.month),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: data.map(d => d.amount),
+                        borderColor: 'rgb(220, 53, 69)',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

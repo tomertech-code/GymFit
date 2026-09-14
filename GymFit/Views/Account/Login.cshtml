@@ -1,0 +1,219 @@
+﻿@model GymFit.Application.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - GymFit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-dark: #c19a2b;
+            --dark-bg: #121212;
+            --card-bg: #1a1a1a;
+            --border: #333333;
+            --text-light: #f8f9fa;
+            --text-muted: rgba(255,255,255,0.6);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1e1e1e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .auth-page {
+            background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&q=90') center/cover no-repeat;
+            position: relative;
+        }
+
+            .auth-page::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to bottom, rgba(18,18,18,0.97), rgba(18,18,18,0.92));
+            }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 50px rgba(212,175,55,0.12);
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+            .logo i {
+                color: var(--gold);
+            }
+
+            .logo span {
+                color: var(--gold);
+            }
+
+        .form-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                background: rgba(255,255,255,0.1);
+                border-color: var(--gold);
+                box-shadow: 0 0 0 0.25rem rgba(212,175,55,0.3);
+                color: var(--text-light);
+            }
+
+            .form-control::placeholder {
+                color: rgba(255,255,255,0.4);
+            }
+
+        .btn-gold {
+            background: var(--gold);
+            color: #121212;
+            border: none;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(212,175,55,0.35);
+        }
+
+            .btn-gold:hover {
+                background: var(--gold-dark);
+                transform: translateY(-4px);
+                box-shadow: 0 15px 40px rgba(212,175,55,0.45);
+            }
+
+            .btn-gold i {
+                margin-right: 0.6rem;
+            }
+
+        .text-gold {
+            color: var(--gold);
+        }
+
+        .link-gold {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+            .link-gold:hover {
+                color: var(--gold-dark);
+            }
+
+        .premium-shadow {
+            box-shadow: 0 10px 40px rgba(212,175,55,0.15);
+        }
+
+        @@media (max-width: 768px) {
+            .auth-card {
+                padding: 2.5rem;
+                margin: 1rem;
+                border-radius: 20px;
+            }
+
+            .logo {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body class="auth-page d-flex align-items-center">
+    <div class="container auth-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="auth-card premium-shadow">
+                    <div class="text-center mb-5">
+                        <h1 class="logo mb-3">
+                            <i class="fas fa-crown"></i> GYM<span>FIT</span>
+                        </h1>
+                        <p class="lead text-muted">Welcome back to the elite. Login to continue your journey.</p>
+                    </div>
+                    <form id="loginForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label">Email Address</label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="you@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" />
+                            <span asp-validation-for="Password" class="text-danger small mt-1"></span>
+                        </div>
+                        <div class="mb-4 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label text-white-60">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100 py-3">
+                            <i class="fas fa-crown"></i> Enter Elite Access
+                        </button>
+                    </form>
+                    <div class="text-center mt-5">
+                        <p class="text-muted mb-3">
+                            Not yet part of the elite?
+                            <a href="/Account/Register" class="link-gold">Join now</a>
+                        </p>
+                        <a href="/" class="text-white-60 small">
+                            <i class="fas fa-home me-2"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/ajaxHelper.js"></script>
+    <script src="~/js/toast.js"></script>
+    <script>
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            const btn = $(this).find('button[type="submit"]');
+            const originalText = btn.html();
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Entering elite access...');
+
+            ajaxHelper.post('/Account/Login', $(this).serialize(), function(response) {
+                if (response.success) {
+                    showToast('success', 'Welcome back to the elite! Redirecting...');
+                    setTimeout(() => window.location.href = response.redirectUrl || '/', 1500);
+                } else {
+                    showToast('error', response.message || 'Invalid credentials. Try again.');
+                    btn.prop('disabled', false).html(originalText);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

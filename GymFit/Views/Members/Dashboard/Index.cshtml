@@ -1,0 +1,56 @@
+﻿@model GymFit.Application.DTOs.MemberDto
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<section class="py-5 bg-dark">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-white mb-4">Welcome, <span class="text-danger">@Model.FirstName</span>!</h1>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="member-card">
+                    <i class="fas fa-user-circle fa-3x text-danger mb-3"></i>
+                    <h3>My Profile</h3>
+                    <p class="text-white-50">Update your personal information</p>
+                    <a href="/Member/Dashboard/Profile" class="btn btn-danger">View Profile</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="member-card">
+                    <i class="fas fa-dumbbell fa-3x text-danger mb-3"></i>
+                    <h3>Workout Plans</h3>
+                    <p class="text-white-50">Access your training programs</p>
+                    <a href="/Member/Dashboard/Workouts" class="btn btn-danger">View Workouts</a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="member-card">
+                    <i class="fas fa-calendar-check fa-3x text-danger mb-3"></i>
+                    <h3>Attendance</h3>
+                    <p class="text-white-50">Track your gym visits</p>
+                    <a asp-controller="MemberAttendance" asp-action="Index" class="btn btn-danger">View History</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h4 class="text-white"><i class="fas fa-crown text-danger"></i> Membership Status</h4>
+                    <p class="text-white-50">Plan: <strong>@Model.CurrentPlan</strong></p>
+                    <p class="text-white-50">Trainer: <strong>@(Model.AssignedTrainerName ?? "Not Assigned")</strong></p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h4 class="text-white"><i class="fas fa-chart-line text-danger"></i> Your Progress</h4>
+                    <p class="text-white-50">Member since: <strong>@Model.JoinDate.ToString("MMM dd, yyyy")</strong></p>
+                    <p class="text-white-50">Total visits: <strong>0</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

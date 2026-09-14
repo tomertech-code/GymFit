@@ -1,0 +1,249 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<section class="py-5" style="background: linear-gradient(to bottom, #121212, #1a1a1a); min-height: 100vh;">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">
+                    Elite <span class="text-gold">Dashboard</span>
+                </h1>
+                <p class="text-white-60 fs-5 mb-0">Real-time overview of your luxury fitness empire</p>
+            </div>
+            <button type="button" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow-gold">
+                <i class="fas fa-download me-2"></i> Export Report
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-5 mb-5" id="statsCards">
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);"><p class="text-white-70 mb-2 fs-5">Total Elite Members</p><h2 class="display-4 fw-bold text-white mb-0" id="totalMembers">0</h2></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #166534, #16a34a);"><p class="text-white-70 mb-2 fs-5">Currently Active</p><h2 class="display-4 fw-bold text-white mb-0" id="activeMembers">0</h2></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #d97706, #f59e0b);"><p class="text-white-70 mb-2 fs-5">Today's Check-ins</p><h2 class="display-4 fw-bold text-white mb-0" id="todayAttendance">0</h2></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #991b1b, #dc2626);"><p class="text-white-70 mb-2 fs-5">Monthly Revenue</p><h2 class="display-4 fw-bold text-white mb-0" id="monthlyRevenue">$0</h2></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100 bg-secondary"><p class="text-white-70 mb-2 fs-5">Expired memberships</p><h2 class="display-4 fw-bold text-white mb-0" id="expiredMemberships">0</h2></div></div>
+            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100 bg-dark"><p class="text-white-70 mb-2 fs-5">Today's enquiries</p><h2 class="display-4 fw-bold text-white mb-0" id="todayEnquiries">0</h2></div></div>
+        </div>
+
+        <!-- Main Content: Chart + Recent Members -->
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="card premium-shadow rounded-4 overflow-hidden" style="background: #1a1a1a; border: 1px solid #333;">
+                    <div class="card-header py-4 px-5 d-flex justify-content-between align-items-center" style="background: #121212; border-bottom: 1px solid #333;">
+                        <h3 class="h5 fw-bold text-white mb-0">
+                            <i class="fas fa-chart-line text-gold me-3"></i> Revenue Performance
+                        </h3>
+                        <small class="text-white-50">Last 12 months</small>
+                    </div>
+                    <div class="card-body p-5">
+                        <canvas id="revenueChart" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card premium-shadow rounded-4 overflow-hidden" style="background: #1a1a1a; border: 1px solid #333;">
+                    <div class="card-header py-4 px-5 d-flex justify-content-between align-items-center" style="background: #121212; border-bottom: 1px solid #333;">
+                        <h3 class="h5 fw-bold text-white mb-0">
+                            <i class="fas fa-crown text-gold me-3"></i> New Elite Members
+                        </h3>
+                        <small class="text-white-50">Recent joins</small>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="recentMembersList">
+                            <li class="list-group-item text-center py-5 text-white-60">
+                                <i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Loading new members...
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-gold {
+        color: #d4af37 !important;
+    }
+
+    .text-white-70 {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .text-white-60 {
+        color: rgba(255,255,255,0.6);
+    }
+
+    .text-white-50 {
+        color: rgba(255,255,255,0.5);
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #121212;
+        border: none;
+        font-weight: 700;
+        transition: all 0.4s ease;
+    }
+
+        .btn-gold:hover {
+            background-color: #c19a2b;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(212,175,55,0.4);
+        }
+
+    .stat-card {
+        transition: all 0.4s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 60px rgba(212,175,55,0.15);
+        }
+
+    .stat-icon-large {
+        position: absolute;
+        right: -10px;
+        bottom: -20px;
+        font-size: 8rem;
+        pointer-events: none;
+    }
+
+    .premium-shadow {
+        box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+    }
+
+    .shadow-gold {
+        box-shadow: 0 10px 30px rgba(212,175,55,0.4);
+    }
+
+    .list-group-item {
+        background: transparent;
+        border-color: #333;
+        padding: 1.25rem 1.5rem;
+        transition: background 0.3s ease;
+    }
+
+        .list-group-item:hover {
+            background: rgba(212,175,55,0.08);
+        }
+
+    .avatar-circle-small {
+        width: 45px;
+        height: 45px;
+        background: rgba(212,175,55,0.15);
+        border: 2px solid #d4af37;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let revenueChart;
+        $(document).ready(function () {
+            loadDashboardStats();
+        });
+
+        function loadDashboardStats() {
+            ajaxHelper.get('/AdminDashboard/GetStats', function (data) {
+                // Update stats with formatting
+                $('#totalMembers').text(data.totalMembers.toLocaleString());
+                $('#activeMembers').text(data.activeMembers.toLocaleString());
+                $('#todayAttendance').text(data.todayAttendance.toLocaleString());
+                $('#monthlyRevenue').text('$' + data.monthlyRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                $('#expiredMemberships').text(data.expiredMemberships.toLocaleString());
+                $('#todayEnquiries').text(data.todayEnquiries.toLocaleString());
+
+                // Recent Members
+                let membersList = '';
+                if (data.recentMembers.length === 0) {
+                    membersList = '<li class="list-group-item text-center text-white-60 py-5">No recent sign-ups</li>';
+                } else {
+                    data.recentMembers.forEach(function (member) {
+                        membersList += `
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle-small me-3">
+                                        <i class="fas fa-user text-gold"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <strong class="text-white d-block">${member.name}</strong>
+                                        <small class="text-white-60">${member.plan} Plan • Joined ${member.joinDate || 'Today'}</small>
+                                    </div>
+                                </div>
+                            </li>
+                        `;
+                    });
+                }
+                $('#recentMembersList').html(membersList);
+
+                // Revenue Chart
+                createRevenueChart(data.revenueChart);
+            });
+        }
+
+        function createRevenueChart(data) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            if (revenueChart) revenueChart.destroy();
+
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.month),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: data.map(d => d.amount),
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                        tension: 0.4,
+                        pointBackgroundColor: '#d4af37',
+                        pointBorderColor: '#d4af37',
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(26,26,26,0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Revenue: $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: {
+                                color: '#aaa',
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#aaa' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

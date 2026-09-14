@@ -1,0 +1,151 @@
+﻿@model IEnumerable<GymFit.Domain.Entities.MembershipPlan>
+@{
+    ViewData["Title"] = "Membership Plans";
+}
+<section class="py-5" style="background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white">Elevate Your Fitness with <span class="text-gold">Premium Plans</span></h1>
+            <p class="lead text-white-60">Exclusive memberships tailored for elite performance and luxury wellness</p>
+        </div>
+        <div class="row justify-content-center g-5">
+            @foreach (var plan in Model)
+            {
+                var isPremium = plan.Type == GymFit.Domain.Enums.MembershipType.Premium;
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card h-100 position-relative @(isPremium ? "featured premium-shadow" : "standard-card")" style="transition: all 0.4s ease; border-radius: 20px; overflow: hidden;">
+                        @if (isPremium)
+                        {
+                            <div class="ribbon ribbon-top-right"><span class="bg-gold text-dark fw-bold">MOST EXCLUSIVE</span></div>
+                        }
+                        <div class="card-header text-center py-5 @(isPremium ? "bg-gold text-dark" : "bg-dark text-white")">
+                            <h3 class="h2 fw-bold mb-0">@plan.Name</h3>
+                            @if (isPremium)
+                            {
+                                <p class="small mt-2 opacity-75">Ultimate Luxury Experience</p>
+                            }
+                        </div>
+                        <div class="card-body text-center py-5 @(isPremium ? "bg-gradient-dark" : "bg-dark")">
+                            <div class="price-tag mb-4">
+                                <sup class="fs-4 text-white-50">$</sup>
+                                <span class="display-3 fw-bold text-white">@plan.Price.ToString("F0")</span>
+                                <sub class="fs-5 text-white-50">/month</sub>
+                            </div>
+                            <p class="text-white-60 mb-5 px-4">@plan.Description</p>
+                            <ul class="features-list list-unstyled mb-5">
+                                @foreach (var feature in plan.Features.Split(','))
+                                {
+                                    <li class="py-3 text-white">
+                                        <i class="fas fa-check-circle text-gold me-3"></i>
+                                        <span>@feature.Trim()</span>
+                                    </li>
+                                }
+                            </ul>
+                            <a href="/Account/Register" class="btn @(isPremium ? "btn-gold btn-lg shadow-gold" : "btn-outline-gold btn-lg") w-75 rounded-pill">
+                                @if (isPremium)
+                                {
+                                    <strong>Join Elite</strong>
+                                }
+                                else {
+                                    <strong>  Get Started</strong>
+                                   }
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-gold {
+        color: #d4af37;
+    }
+
+    .bg-gold {
+        background-color: #d4af37 !important;
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #121212;
+        border: none;
+    }
+
+        .btn-gold:hover {
+            background-color: #c19a2b;
+            transform: translateY(-3px);
+        }
+
+    .btn-outline-gold {
+        border: 2px solid #d4af37;
+        color: #d4af37;
+    }
+
+        .btn-outline-gold:hover {
+            background-color: #d4af37;
+            color: #121212;
+        }
+
+    .text-white-60 {
+        color: rgba(255,255,255,0.6);
+    }
+
+    .bg-gradient-dark {
+        background: linear-gradient(to bottom, #1e1e1e, #121212);
+    }
+
+    .pricing-card {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+        .pricing-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(212,175,55,0.2);
+        }
+
+    .featured {
+        transform: scale(1.05);
+        z-index: 10;
+        border: 2px solid #d4af37;
+    }
+
+    .premium-shadow {
+        box-shadow: 0 0 40px rgba(212,175,55,0.3);
+    }
+
+    .standard-card:hover {
+        box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    }
+
+    .ribbon {
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+    }
+
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 225px;
+            padding: 8px 0;
+            box-shadow: 0 5px 10px rgba(0,0,0,.3);
+            color: #fff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            text-align: center;
+            transform: rotate(45deg);
+            top: 25px;
+            right: -30px;
+        }
+
+    .shadow-gold {
+        box-shadow: 0 10px 30px rgba(212,175,55,0.4);
+    }
+</style>

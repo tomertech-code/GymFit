@@ -1,0 +1,43 @@
+﻿@model GymFit.Application.DTOs.MemberDto
+@{
+    ViewData["Title"] = "My Profile";
+}
+<section class="py-5 bg-dark">
+    <div class="container">
+        <h1 class="display-5 fw-bold text-white mb-4">My <span class="text-danger">Profile</span></h1>
+        <div class="card bg-secondary text-white shadow-sm">
+            <div class="card-body">
+                <h2 class="h4">@Model.FullName</h2>
+                <p class="text-white-50">Member since @Model.JoinDate.ToString("MMM dd, yyyy")</p>
+                <form method="post" asp-action="Profile" asp-antiforgery="true">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First name</label>
+                            <input class="form-control" value="@Model.FirstName" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last name</label>
+                            <input class="form-control" value="@Model.LastName" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" value="@Model.Email" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input class="form-control" value="@Model.PhoneNumber" readonly />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" readonly>@Model.Address</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Emergency contact</label>
+                            <input class="form-control" value="@Model.EmergencyContact" readonly />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

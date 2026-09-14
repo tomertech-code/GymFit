@@ -1,0 +1,5 @@
+@model GymFit.Domain.Entities.Member
+@{
+    ViewData["Title"] = "Assigned Member";
+}
+<div class="container py-5"><a asp-action="Dashboard" class="btn btn-link px-0">&larr; Back to my members</a><div class="card shadow-sm mt-3"><div class="card-body"><h1 class="h3">@Model.User.FirstName @Model.User.LastName</h1><p class="text-muted">@Model.User.Email · @Model.User.PhoneNumber</p><dl class="row"><dt class="col-sm-3">Address</dt><dd class="col-sm-9">@Model.Address</dd><dt class="col-sm-3">Emergency contact</dt><dd class="col-sm-9">@Model.EmergencyContact</dd><dt class="col-sm-3">Membership</dt><dd class="col-sm-9">@(Model.Subscriptions.OrderByDescending(s => s.EndDate).FirstOrDefault()?.MembershipPlan.Name ?? "No active membership")</dd></dl><a class="btn btn-danger" asp-controller="Attendance" asp-action="Index">Attendance</a></div></div></div>

@@ -1,0 +1,406 @@
+﻿@{
+    ViewData["Title"] = "Branch Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-building"></i> Branch Management</h1>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addBranchModal">
+        <i class="fas fa-plus"></i> Add Branch
+    </button>
+</div>
+
+<!-- Branch Cards Grid -->
+<div class="row" id="branchesGrid">
+    <div class="col-12 text-center">
+        <div class="spinner-border text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Branch Modal -->
+<div class="modal fade" id="addBranchModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Add New Branch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="branchForm">
+                <div class="modal-body">
+                    <input type="hidden" id="branchId" name="Id">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Branch Name *</label>
+                            <input type="text" class="form-control" name="Name" required
+                                   placeholder="e.g., GymFit Andheri">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Branch Code *</label>
+                            <input type="text" class="form-control" name="Code" required
+                                   placeholder="e.g., GF-AND-01">
+                            <small class="text-white-50">Unique identifier</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address *</label>
+                        <textarea class="form-control" name="Address" rows="2" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">City *</label>
+                            <input type="text" class="form-control" name="City" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State *</label>
+                            <input type="text" class="form-control" name="State" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Pin Code *</label>
+                            <input type="text" class="form-control" name="PinCode" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" name="PhoneNumber" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="Email" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Manager Name</label>
+                            <input type="text" class="form-control" name="ManagerName">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Manager Phone</label>
+                            <input type="tel" class="form-control" name="ManagerPhone">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Opening Time</label>
+                            <input type="time" class="form-control" name="OpeningTime" value="06:00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Closing Time</label>
+                            <input type="time" class="form-control" name="ClosingTime" value="22:00">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="IsActive" checked id="isActiveCheck">
+                            <label class="form-check-label text-white" for="isActiveCheck">
+                                Active
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Save Branch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Branch Details Modal -->
+<div class="modal fade" id="branchDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Branch Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="branchDetailsContent">
+                <!-- Details loaded via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            loadBranches();
+        });
+
+        function loadBranches() {
+            ajaxHelper.get('/Admin/Branches/GetAll', function(branches) {
+                displayBranches(branches);
+            });
+        }
+
+        function displayBranches(branches) {
+            if (branches.length === 0) {
+                $('#branchesGrid').html(`
+                    <div class="col-12 text-center">
+                        <div class="empty-state">
+                            <i class="fas fa-building fa-3x text-white-50 mb-3"></i>
+                            <p class="text-white-50">No branches found. Add your first branch!</p>
+                        </div>
+                    </div>
+                `);
+                return;
+            }
+
+            let html = '';
+            branches.forEach(function(branch) {
+                const statusClass = branch.isActive ? 'bg-success' : 'bg-danger';
+                const statusText = branch.isActive ? 'Active' : 'Inactive';
+
+                html += `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="branch-card">
+                            <div class="branch-header">
+                                <div>
+                                    <h4 class="text-white mb-1">${branch.name}</h4>
+                                    <span class="badge ${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="branch-code">
+                                    <small class="text-white-50">CODE:</small><br>
+                                    <strong class="text-danger">${branch.code}</strong>
+                                </div>
+                            </div>
+
+                            <div class="branch-info">
+                                <div class="info-item">
+                                    <i class="fas fa-map-marker-alt text-danger"></i>
+                                    <span>${branch.city}, ${branch.state}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-phone text-danger"></i>
+                                    <span>${branch.phoneNumber}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-envelope text-danger"></i>
+                                    <span>${branch.email}</span>
+                                </div>
+                                ${branch.managerName ? `
+                                <div class="info-item">
+                                    <i class="fas fa-user-tie text-danger"></i>
+                                    <span>Manager: ${branch.managerName}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="branch-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-users text-danger"></i>
+                                    <span>${branch.members ? branch.members.length : 0} Members</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="fas fa-dumbbell text-danger"></i>
+                                    <span>${branch.trainers ? branch.trainers.length : 0} Trainers</span>
+                                </div>
+                            </div>
+
+                            <div class="branch-actions">
+                                <button class="btn btn-sm btn-info" onclick="viewBranch(${branch.id})">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="editBranch(${branch.id})">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteBranch(${branch.id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            $('#branchesGrid').html(html);
+        }
+
+        $('#branchForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                Name: $('[name="Name"]').val(),
+                Code: $('[name="Code"]').val(),
+                Address: $('[name="Address"]').val(),
+                City: $('[name="City"]').val(),
+                State: $('[name="State"]').val(),
+                PinCode: $('[name="PinCode"]').val(),
+                PhoneNumber: $('[name="PhoneNumber"]').val(),
+                Email: $('[name="Email"]').val(),
+                ManagerName: $('[name="ManagerName"]').val(),
+                ManagerPhone: $('[name="ManagerPhone"]').val(),
+                OpeningTime: $('[name="OpeningTime"]').val(),
+                ClosingTime: $('[name="ClosingTime"]').val(),
+                IsActive: $('[name="IsActive"]').is(':checked')
+            };
+
+            $.ajax({
+                url: '/Admin/Branches/Create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        $('#addBranchModal').modal('hide');
+                        $('#branchForm')[0].reset();
+                        loadBranches();
+                    } else {
+                        showToast('error', response.message);
+                    }
+                }
+            });
+        });
+
+        function viewBranch(id) {
+            ajaxHelper.get(`/Admin/Branches/Details?id=${id}`, function(branch) {
+                let html = `
+                    <div class="branch-details">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong class="text-white">Branch Name:</strong>
+                                <p class="text-white-50">${branch.name}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="text-white">Code:</strong>
+                                <p class="text-danger">${branch.code}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong class="text-white">Address:</strong>
+                                <p class="text-white-50">${branch.address}<br>
+                                ${branch.city}, ${branch.state} - ${branch.pinCode}</p>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong class="text-white">Contact:</strong>
+                                <p class="text-white-50">
+                                    <i class="fas fa-phone"></i> ${branch.phoneNumber}<br>
+                                    <i class="fas fa-envelope"></i> ${branch.email}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="text-white">Timing:</strong>
+                                <p class="text-white-50">
+                                    ${branch.openingTime} - ${branch.closingTime}
+                                </p>
+                            </div>
+                        </div>
+                        ${branch.managerName ? `
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <strong class="text-white">Manager:</strong>
+                                <p class="text-white-50">
+                                    ${branch.managerName}<br>
+                                    <i class="fas fa-phone"></i> ${branch.managerPhone || 'N/A'}
+                                </p>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                $('#branchDetailsContent').html(html);
+                $('#branchDetailsModal').modal('show');
+            });
+        }
+
+        function editBranch(id) {
+            // Implementation for edit
+            showToast('info', 'Edit functionality - Load branch data and populate form');
+        }
+
+        function deleteBranch(id) {
+            if (confirm('Are you sure you want to delete this branch?')) {
+                ajaxHelper.post('/Admin/Branches/Delete', { id: id }, function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        loadBranches();
+                    } else {
+                        showToast('error', response.message);
+                    }
+                });
+            }
+        }
+    </script>
+
+    <style>
+        .branch-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 1.5rem;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .branch-card:hover {
+            border-color: #dc3545;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+        }
+
+        .branch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #444;
+        }
+
+        .branch-code {
+            text-align: right;
+        }
+
+        .branch-info {
+            margin: 1rem 0;
+        }
+
+        .info-item {
+            padding: 0.5rem 0;
+            color: #f8f9fa;
+        }
+
+        .info-item i {
+            width: 20px;
+            margin-right: 0.5rem;
+        }
+
+        .branch-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            margin: 1rem 0;
+            border-top: 1px solid #444;
+            border-bottom: 1px solid #444;
+        }
+
+        .branch-stats .stat-item {
+            text-align: center;
+            color: #f8f9fa;
+        }
+
+        .branch-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    </style>
+}

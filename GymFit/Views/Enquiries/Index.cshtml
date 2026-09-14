@@ -1,0 +1,49 @@
+@model IReadOnlyList<GymFit.Domain.Entities.ContactMessage>
+@{
+    ViewData["Title"] = "Enquiries";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center py-4">
+    <h1 class="h2">Contact enquiries</h1>
+    <span class="badge bg-secondary">@Model.Count total</span>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr><th>Status</th><th>Received</th><th>Contact</th><th>Subject</th><th>Message</th><th></th></tr>
+            </thead>
+            <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center py-4">No enquiries have been received.</td></tr>
+            }
+            @foreach (var enquiry in Model)
+            {
+                <tr class="@(enquiry.IsRead ? "" : "table-warning")">
+                    <td>@(enquiry.IsRead ? "Read" : "New")</td>
+                    <td>@enquiry.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</td>
+                    <td><strong>@enquiry.Name</strong><br /><small>@enquiry.Email</small>@if (!string.IsNullOrWhiteSpace(enquiry.Phone)){<br /><small>@enquiry.Phone</small>}</td>
+                    <td>@enquiry.Subject</td>
+                    <td class="text-break" style="min-width: 260px">@enquiry.Message</td>
+                    <td class="text-nowrap">
+                        @if (!enquiry.IsRead)
+                        {
+                            <form asp-action="MarkRead" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()<input type="hidden" name="id" value="@enquiry.Id" />
+                                <button class="btn btn-sm btn-outline-primary" type="submit">Mark read</button>
+                            </form>
+                        }
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this enquiry?');">
+                            @Html.AntiForgeryToken()<input type="hidden" name="id" value="@enquiry.Id" />
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

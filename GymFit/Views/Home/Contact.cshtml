@@ -1,0 +1,137 @@
+﻿@model GymFit.Application.ViewModels.ContactViewModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <h1 class="display-4 fw-bold text-white">Connect with <span class="text-gold">Excellence</span></h1>
+                    <p class="lead text-white-60 fs-4">Reach out to our elite team for inquiries, memberships, or personalized guidance</p>
+                </div>
+                        <div class="mb-4">
+                            <label asp-for="Phone" class="form-label text-white-60 fw-medium">Phone (optional)</label>
+                            <input asp-for="Phone" class="form-control" type="tel" placeholder="Your phone number" />
+                            <span asp-validation-for="Phone" class="text-danger small mt-1"></span>
+                        </div>
+                <div class="contact-form-box premium-shadow rounded-4 p-5">
+                    <form id="contactForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label text-white-60 fw-medium">Your Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
+                            <span asp-validation-for="Name" class="text-danger small mt-1"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label text-white-60 fw-medium">Email Address</label>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="you@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Subject" class="form-label text-white-60 fw-medium">Subject</label>
+                            <input asp-for="Subject" class="form-control" placeholder="What's on your mind?" />
+                            <span asp-validation-for="Subject" class="text-danger small mt-1"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Message" class="form-label text-white-60 fw-medium">Your Message</label>
+                            <textarea asp-for="Message" class="form-control" rows="6" placeholder="Tell us how we can assist you..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger small mt-1"></span>
+                        </div>
+                        <button type="submit" class="btn btn-gold btn-lg w-100 py-3 rounded-pill shadow-gold">
+                            <i class="fas fa-paper-plane me-2"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-gold {
+        color: #d4af37;
+    }
+
+    .text-white-60 {
+        color: rgba(255,255,255,0.6);
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #121212;
+        border: none;
+        font-weight: 700;
+        transition: all 0.4s ease;
+    }
+
+        .btn-gold:hover {
+            background-color: #c19a2b;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(212,175,55,0.4);
+        }
+
+    .contact-form-box {
+        background: #1a1a1a;
+        border: 1px solid #333;
+    }
+
+    .form-control {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid #333;
+        color: #f8f9fa;
+        padding: 0.85rem 1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            background: rgba(255,255,255,0.1);
+            border-color: #d4af37;
+            box-shadow: 0 0 0 0.2rem rgba(212,175,55,0.25);
+            color: #f8f9fa;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .premium-shadow {
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .shadow-gold {
+        box-shadow: 0 10px 30px rgba(212,175,55,0.4);
+    }
+
+    @@media (max-width: 768px) {
+        .contact-form-box {
+            padding: 2rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $('#contactForm').on('submit', function(e) {
+            e.preventDefault();
+            const btn = $(this).find('button[type="submit"]');
+            const originalText = btn.html();
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Sending...');
+
+            ajaxHelper.post('/Home/Contact', $(this).serialize(), function(response) {
+                if (response.success) {
+                    showToast('success', response.message || 'Message sent successfully!');
+                    $('#contactForm')[0].reset();
+                } else {
+                    showToast('error', response.message || 'Something went wrong. Please try again.');
+                }
+                btn.prop('disabled', false).html(originalText);
+            });
+        });
+    </script>
+}

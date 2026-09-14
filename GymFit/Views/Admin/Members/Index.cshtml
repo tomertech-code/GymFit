@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Members Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Members Management</h1>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+        <i class="fas fa-plus"></i> Add Member
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="membersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Join Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            loadMembers();
+        });
+
+        function loadMembers() {
+            ajaxHelper.get('/Admin/Members/GetAll', function(data) {
+                let html = '';
+                data.forEach(function(member) {
+                    html += `
+                        <tr>
+                            <td>${member.firstName} ${member.lastName}</td>
+                            <td>${member.email}</td>
+                            <td>${member.phoneNumber}</td>
+                            <td>${new Date(member.joinDate).toLocaleDateString()}</td>
+                            <td>
+                                <span class="badge ${member.isActive ? 'bg-success' : 'bg-danger'}">
+                                    ${member.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewMember(${member.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="editMember(${member.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteMember(${member.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#membersTableBody').html(html);
+            });
+        }
+
+        function deleteMember(id) {
+            if (confirm('Are you sure you want to delete this member?')) {
+                ajaxHelper.post('/Admin/Members/Delete', { id: id }, function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        loadMembers();
+                    } else {
+                        showToast('error', response.message);
+                    }
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,305 @@
+﻿@model IReadOnlyList<GymFit.Domain.Entities.WorkoutPlan>
+
+@{
+    ViewData["Title"] = "My Workouts";
+}
+
+<section class="py-5 bg-dark">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-4 fw-bold text-white">My <span class="text-danger">Workouts</span></h1>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#requestPlanModal">
+                <i class="fas fa-plus"></i> Request Custom Plan
+            </button>
+        </div>
+
+        <!-- Active Workout Plans -->
+        <div class="row mb-5">
+            <div class="col-12 mb-3">
+                <h3 class="text-white"><i class="fas fa-fire text-danger"></i> Active Plans</h3>
+            </div>
+
+            @if (Model.Count == 0)
+            {
+                <div class="alert alert-secondary">
+                    No active workout plans have been assigned yet. Contact your trainer for a plan.
+                </div>
+            }
+            else
+            {
+                @foreach (var plan in Model)
+                {
+                    <div class="col-lg-6 mb-4">
+                        <div class="workout-plan-card">
+                            <div class="plan-header">
+                                <h4 class="text-white">@plan.Name</h4>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <div class="plan-info">
+                                <p class="text-white-50">
+                                    <i class="fas fa-user-tie text-danger"></i> Trainer: @plan.Trainer.User.FirstName @plan.Trainer.User.LastName
+                                </p>
+                                <p class="text-white-50">
+                                    <i class="fas fa-calendar text-danger"></i> @plan.StartDate.ToString("dd MMM yyyy") - @plan.EndDate?.ToString("dd MMM yyyy")
+                                </p>
+                            </div>
+                            <div class="plan-description">
+                                <p class="text-white-50">
+                                    @plan.Description
+                                </p>
+                            </div>
+                            <div class="plan-progress mb-3">
+                                <label class="text-white-50 small">Progress: 35%</label>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-danger" style="width: 35%"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger w-100" onclick="viewWorkoutDetails(@plan.Id)">
+                                <i class="fas fa-eye"></i> View Exercises
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Weekly Schedule -->
+        <div class="row">
+            <div class="col-12 mb-3">
+                <h3 class="text-white"><i class="fas fa-calendar-week text-danger"></i> This Week's Schedule</h3>
+            </div>
+
+            <div class="col-12">
+                <div class="schedule-card">
+                    <div class="accordion" id="weeklySchedule">
+                        <!-- Monday -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#monday">
+                                    <i class="fas fa-calendar-day text-danger me-2"></i> Monday - Chest & Triceps
+                                </button>
+                            </h2>
+                            <div id="monday" class="accordion-collapse collapse show" data-bs-parent="#weeklySchedule">
+                                <div class="accordion-body">
+                                    <div class="exercise-list">
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Bench Press</h5>
+                                            <p class="text-white-50">4 sets × 8-10 reps | Rest: 90 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Incline Dumbbell Press</h5>
+                                            <p class="text-white-50">3 sets × 10-12 reps | Rest: 60 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Tricep Dips</h5>
+                                            <p class="text-white-50">3 sets × 12-15 reps | Rest: 45 seconds</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wednesday -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#wednesday">
+                                    <i class="fas fa-calendar-day text-danger me-2"></i> Wednesday - Back & Biceps
+                                </button>
+                            </h2>
+                            <div id="wednesday" class="accordion-collapse collapse" data-bs-parent="#weeklySchedule">
+                                <div class="accordion-body">
+                                    <div class="exercise-list">
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Deadlifts</h5>
+                                            <p class="text-white-50">4 sets × 6-8 reps | Rest: 120 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Pull-ups</h5>
+                                            <p class="text-white-50">3 sets × 8-10 reps | Rest: 90 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Barbell Curls</h5>
+                                            <p class="text-white-50">3 sets × 10-12 reps | Rest: 60 seconds</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Friday -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#friday">
+                                    <i class="fas fa-calendar-day text-danger me-2"></i> Friday - Legs & Shoulders
+                                </button>
+                            </h2>
+                            <div id="friday" class="accordion-collapse collapse" data-bs-parent="#weeklySchedule">
+                                <div class="accordion-body">
+                                    <div class="exercise-list">
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Squats</h5>
+                                            <p class="text-white-50">4 sets × 8-10 reps | Rest: 120 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Leg Press</h5>
+                                            <p class="text-white-50">3 sets × 12-15 reps | Rest: 90 seconds</p>
+                                        </div>
+                                        <div class="exercise-item">
+                                            <h5 class="text-white">Shoulder Press</h5>
+                                            <p class="text-white-50">3 sets × 10-12 reps | Rest: 60 seconds</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Request Plan Modal -->
+<div class="modal fade" id="requestPlanModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Request Custom Workout Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="requestPlanForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-white">Fitness Goal</label>
+                        <select class="form-select" required>
+                            <option value="">Select Goal</option>
+                            <option value="strength">Build Strength</option>
+                            <option value="muscle">Build Muscle</option>
+                            <option value="weight-loss">Weight Loss</option>
+                            <option value="endurance">Improve Endurance</option>
+                            <option value="flexibility">Flexibility</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Preferred Trainer</label>
+                        <select class="form-select">
+                            <option value="">Any Trainer</option>
+                            <option value="1">John Smith</option>
+                            <option value="2">Sarah Johnson</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white">Additional Notes</label>
+                        <textarea class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .workout-plan-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 20px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+            .workout-plan-card:hover {
+                border-color: #dc3545;
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+            }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #444;
+        }
+
+        .plan-info p {
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            margin: 1rem 0;
+        }
+
+        .schedule-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .accordion-item {
+            background: transparent;
+            border: 1px solid #444;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .accordion-button {
+            background: rgba(220, 53, 69, 0.1);
+            color: #f8f9fa;
+            font-weight: 600;
+        }
+
+            .accordion-button:not(.collapsed) {
+                background: #dc3545;
+                color: white;
+            }
+
+        .accordion-body {
+            background: #1a1a1a;
+            color: #f8f9fa;
+        }
+
+        .exercise-list {
+            padding: 0;
+        }
+
+        .exercise-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #444;
+        }
+
+            .exercise-item:last-child {
+                border-bottom: none;
+            }
+
+        .modal-content {
+            background: #2a2a2a;
+            color: #f8f9fa;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #dc3545;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function viewWorkoutDetails(id) {
+            showToast('info', 'Loading workout details...');
+        }
+
+        $('#requestPlanForm').on('submit', function(e) {
+            e.preventDefault();
+            showToast('success', 'Workout plan request submitted! Your trainer will contact you soon.');
+            $('#requestPlanModal').modal('hide');
+        });
+    </script>
+}

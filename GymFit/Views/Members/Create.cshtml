@@ -1,0 +1,35 @@
+@model GymFit.Application.ViewModels.MemberViewModel
+@{
+    ViewData["Title"] = "Add Member";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-4">
+    <h1 class="h2 mb-4">Add member</h1>
+    <form id="memberForm" asp-action="Create" method="post" class="card card-body shadow-sm">
+        @Html.AntiForgeryToken()
+        <div class="row g-3">
+            <div class="col-md-6"><label asp-for="FirstName" class="form-label"></label><input asp-for="FirstName" class="form-control" /><span asp-validation-for="FirstName" class="text-danger"></span></div>
+            <div class="col-md-6"><label asp-for="LastName" class="form-label"></label><input asp-for="LastName" class="form-control" /><span asp-validation-for="LastName" class="text-danger"></span></div>
+            <div class="col-md-6"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" type="email" /><span asp-validation-for="Email" class="text-danger"></span></div>
+            <div class="col-md-6"><label asp-for="PhoneNumber" class="form-label"></label><input asp-for="PhoneNumber" class="form-control" /><span asp-validation-for="PhoneNumber" class="text-danger"></span></div>
+            <div class="col-md-6"><label for="password" class="form-label">Temporary password</label><input id="password" name="password" class="form-control" type="password" minlength="8" required /></div>
+            <div class="col-md-6"><label asp-for="EmergencyContact" class="form-label"></label><input asp-for="EmergencyContact" class="form-control" /><span asp-validation-for="EmergencyContact" class="text-danger"></span></div>
+            <div class="col-12"><label asp-for="Address" class="form-label"></label><textarea asp-for="Address" class="form-control"></textarea><span asp-validation-for="Address" class="text-danger"></span></div>
+            <div class="col-12"><label asp-for="MedicalConditions" class="form-label"></label><textarea asp-for="MedicalConditions" class="form-control"></textarea></div>
+        </div>
+        <div class="mt-4"><button class="btn btn-danger" type="submit">Create member</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $('#memberForm').on('submit', function (event) {
+            event.preventDefault();
+            ajaxHelper.post('@Url.Action("Create", "Members")', $(this).serialize(), function (response) {
+                if (response.success) window.location.href = '@Url.Action("Index", "Members")';
+                else showToast('error', response.message || 'Unable to create member.');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,249 @@
+﻿@model IEnumerable<GymFit.Domain.Entities.Trainer>
+@{
+    ViewData["Title"] = "Our Trainers";
+}
+<section class="page-header position-relative overflow-hidden py-5" style="background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);">
+    <div class="container position-relative">
+        <div class="text-center py-5">
+            <h1 class="display-3 fw-bold text-white">Meet Our <span class="text-gold">Elite Trainers</span></h1>
+            <p class="lead text-white-60 fs-4">World-class professionals dedicated to unlocking your peak performance</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background: linear-gradient(to bottom, #121212, #1a1a1a);">
+    <div class="container py-5">
+        <div class="row g-5 justify-content-center">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var trainer in Model)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                            <div class="trainer-image position-relative overflow-hidden">
+                                <img src="~/images/trainers/@(trainer.User.Id).jpg" alt="@trainer.User.FirstName @trainer.User.LastName" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                                <div class="image-overlay"></div>
+                            </div>
+                            <div class="trainer-info p-5">
+                                <h3 class="h3 fw-bold text-white mb-3">@trainer.User.FirstName @trainer.User.LastName</h3>
+                                <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> @trainer.Specialization</p>
+                                <p class="text-white-60 mb-4">@trainer.Bio</p>
+                                <div class="d-flex align-items-center mb-4">
+                                    <span class="badge-gold px-4 py-2">
+                                        <i class="fas fa-clock me-2"></i> @trainer.ExperienceYears Years of Excellence
+                                    </span>
+                                </div>
+                                <p class="text-white-60 small">
+                                    <i class="fas fa-award me-2"></i> @trainer.Certifications
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Enhanced Demo Trainers with Real Images -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://marydupriestudio.com/wordpress/wp-content/uploads/2016/04/Ian.composite.webfile.jpg" alt="John Smith" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">John Smith</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> Strength & Conditioning</p>
+                            <p class="text-white-60 mb-4">Former Olympic athlete with 10+ years of experience in strength training and bodybuilding.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 10 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> NASM-CPT, CSCS, Olympic Weightlifting
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://media.istockphoto.com/id/1470234996/photo/woman-sitting-in-a-fitness-studio-with-her-yoga-class.jpg?s=612x612&w=0&k=20&c=PW0frpWedwpoux9hNCuVuzYYLsRSQxo0FtLtPYOk14c=" alt="Sarah Johnson" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">Sarah Johnson</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> Yoga & Pilates</p>
+                            <p class="text-white-60 mb-4">Certified yoga instructor specializing in flexibility, balance, and mindfulness training.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 8 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> RYT-500, Pilates Instructor, Meditation Coach
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://thumbs.dreamstime.com/b/fitness-trx-man-portrait-crossfit-workout-gym-49622983.jpg" alt="Mike Chen" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">Mike Chen</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> CrossFit & HIIT</p>
+                            <p class="text-white-60 mb-4">High-intensity training expert focused on building endurance, power, and mental toughness.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 7 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> CrossFit L2, ACE-CPT, Nutrition Specialist
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://img.freepik.com/premium-photo/thumbs-up-personal-trainer-fitness-coach-with-gym-clipboard-monitor-health-weight-loss-muscle-growth-portrait-excited-woman-fit-athlete-supporting-exercise-workout-training_590464-78701.jpg" alt="Emily Davis" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">Emily Davis</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> Weight Loss Specialist</p>
+                            <p class="text-white-60 mb-4">Helping clients achieve sustainable weight loss through personalized training and nutrition.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 9 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> NASM-CPT, Precision Nutrition, Behavioral Coach
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5c8bf3c12727be55f6b693ac/1554583496618-D41GCHX30HV0MTH5M9BA/20190128_094033_resized.jpg" alt="David Martinez" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">David Martinez</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> Sports Performance</p>
+                            <p class="text-white-60 mb-4">Elite athlete coach specializing in speed, agility, and sport-specific conditioning.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 12 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> CSCS, USA Track & Field, Speed Coach
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="trainer-card h-100 position-relative overflow-hidden rounded-4 premium-shadow" style="transition: all 0.4s ease;">
+                        <div class="trainer-image position-relative overflow-hidden">
+                            <img src="https://media.istockphoto.com/id/674720396/photo/portrait-of-senior-couple-exercising.jpg?s=612x612&w=0&k=20&c=BDTfugFI7ylwTwT_rtsEWnKg-ciQwxyNd7CYRAaC2Kk=" alt="Lisa Anderson" class="img-fluid w-100" style="height: 400px; object-fit: cover; transition: transform 0.5s ease;" />
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="trainer-info p-5">
+                            <h3 class="h3 fw-bold text-white mb-3">Lisa Anderson</h3>
+                            <p class="text-gold mb-3"><i class="fas fa-certificate fa-lg me-2"></i> Senior Fitness</p>
+                            <p class="text-white-60 mb-4">Specializing in age-appropriate fitness programs for seniors and injury rehabilitation.</p>
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge-gold px-4 py-2">
+                                    <i class="fas fa-clock me-2"></i> 11 Years of Excellence
+                                </span>
+                            </div>
+                            <p class="text-white-60 small">
+                                <i class="fas fa-award me-2"></i> Senior Fitness Specialist, Physical Therapy Assistant
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-5 py-5">
+            <h3 class="display-5 fw-bold text-white mb-4">Ready to Elevate Your Fitness?</h3>
+            <p class="lead text-white-60 mb-5">Schedule a private consultation with one of our elite trainers today.</p>
+            <a href="/Account/Register" class="btn btn-gold btn-lg px-6 py-3 rounded-pill shadow-gold">
+                <i class="fas fa-crown me-2"></i> <strong>Join the Elite Now</strong>
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-gold {
+        color: #d4af37;
+    }
+
+    .badge-gold {
+        background-color: #d4af37;
+        color: #121212;
+        font-weight: 600;
+        border-radius: 50px;
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #121212;
+        border: none;
+        font-weight: 700;
+        transition: all 0.4s ease;
+    }
+
+        .btn-gold:hover {
+            background-color: #c19a2b;
+            transform: translateY(-4px);
+        }
+
+    .text-white-60 {
+        color: rgba(255,255,255,0.6);
+    }
+
+    .trainer-card {
+        background: #1a1a1a;
+        border: 1px solid #333;
+    }
+
+        .trainer-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 30px 60px rgba(212,175,55,0.2);
+            border-color: #d4af37;
+        }
+
+            .trainer-card:hover img {
+                transform: scale(1.1);
+            }
+
+    .image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(26,26,26,0.9), transparent 50%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .trainer-card:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .premium-shadow {
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .shadow-gold {
+        box-shadow: 0 10px 30px rgba(212,175,55,0.4);
+    }
+</style>
