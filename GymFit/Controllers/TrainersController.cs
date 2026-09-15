@@ -1,4 +1,4 @@
-﻿using GymFit.Domain.Entities;
+using GymFit.Domain.Entities;
 using GymFit.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +32,9 @@ namespace GymFit.Web.Controllers
                 .Include(t => t.User)
                 .Include(t => t.AssignedMembers)
                 .Include(t => t.PrimaryBranch)
+                .OrderBy(t => t.User.LastName)
+                .ThenBy(t => t.User.FirstName)
+                .Take(500)
                 .Select(t => new TrainerViewModel
                 {
                     Id = t.Id,
@@ -72,6 +75,33 @@ namespace GymFit.Web.Controllers
         //    return Json(trainers);
         //}
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var trainers = await _context.Trainers
+                .AsNoTracking()
+                .Include(t => t.User)
+                .Include(t => t.AssignedMembers)
+                .Include(t => t.PrimaryBranch)
+                .OrderBy(t => t.User.LastName)
+                .ThenBy(t => t.User.FirstName)
+                .Take(500)
+                .Select(t => new
+                {
+                    t.Id,
+                    Name = t.User.FirstName + " " + t.User.LastName,
+                    Email = t.User.Email ?? string.Empty,
+                    PhoneNumber = t.User.PhoneNumber ?? string.Empty,
+                    t.Specialization,
+                    t.ExperienceYears,
+                    MemberCount = t.AssignedMembers.Count,
+                    t.IsActive,
+                    BranchName = t.PrimaryBranch.Name
+                })
+                .ToListAsync();
+            return Json(trainers);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] string firstName, [FromForm] string lastName,
@@ -94,7 +124,20 @@ namespace GymFit.Web.Controllers
                 if (!result.Succeeded)
                     return Json(new { success = false, message = string.Join(", ", result.Errors.Select(e => e.Description)) });
 
-                await _userManager.AddToRoleAsync(user, "Trainer");
+                var roleResult = await _userManager.AddToRoleAsync(user, "Trainer");
+                if (!roleResult.Succeeded)
+                {
+                    await _userManager.DeleteAsync(user);
+                    return BadRequest(new { success = false, message = "Unable to assign the Trainer role." });
+                }
+
+                var primaryBranchId = await _context.Branches.Where(b => b.IsActive).Select(b => b.Id).FirstOrDefaultAsync();
+                if (primaryBranchId <= 0)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Trainer");
+                    await _userManager.DeleteAsync(user);
+                    return BadRequest(new { success = false, message = "No active branch is configured." });
+                }
 
                 var trainer = new Trainer
                 {
@@ -103,19 +146,96 @@ namespace GymFit.Web.Controllers
                     ExperienceYears = experienceYears,
                     Certifications = certifications,
                     Bio = bio,
-                    PrimaryBranchId = await _context.Branches.Where(b => b.IsActive).Select(b => b.Id).FirstOrDefaultAsync(),
+                    PrimaryBranchId = primaryBranchId,
                     IsActive = true
                 };
 
                 _context.Trainers.Add(trainer);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Trainer");
+                    await _userManager.DeleteAsync(user);
+                    throw;
+                }
 
                 return Json(new { success = true, message = "Trainer created successfully" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = ex.Message });
+                return StatusCode(500, new { success = false, message = "Unable to create the trainer right now. Please try again." });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var trainer = await _context.Trainers
+                .AsNoTracking()
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trainer is null)
+                return NotFound();
+
+            ViewBag.Branches = await _context.Branches.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
+            return View(trainer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,Certifications,ExperienceYears,Bio,PrimaryBranchId,IsActive,WorksAtMultipleBranches")] Trainer model)
+        {
+            if (id != model.Id)
+                return BadRequest();
+
+            if (model.ExperienceYears < 0 || model.ExperienceYears > 60)
+                ModelState.AddModelError(nameof(model.ExperienceYears), "Experience must be between 0 and 60 years.");
+
+            if (!await _context.Branches.AsNoTracking().AnyAsync(b => b.Id == model.PrimaryBranchId && b.IsActive))
+                ModelState.AddModelError(nameof(model.PrimaryBranchId), "Please select an active branch.");
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var trainer = await _context.Trainers
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trainer is null)
+                return NotFound();
+
+            trainer.Specialization = model.Specialization.Trim();
+            trainer.Certifications = model.Certifications?.Trim() ?? string.Empty;
+            trainer.ExperienceYears = model.ExperienceYears;
+            trainer.Bio = model.Bio?.Trim();
+            trainer.PrimaryBranchId = model.PrimaryBranchId;
+            trainer.WorksAtMultipleBranches = model.WorksAtMultipleBranches;
+
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Trainer updated successfully.";
+            return RedirectToAction(nameof(GetAllTrainers));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            var trainer = await _context.Trainers.FirstOrDefaultAsync(t => t.Id == id);
+            if (trainer is null)
+                return NotFound(new { success = false, message = "Trainer not found." });
+
+            trainer.IsActive = !trainer.IsActive;
+
+            var user = await _userManager.FindByIdAsync(trainer.UserId);
+            if (user is not null)
+                user.IsActive = trainer.IsActive;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(GetAllTrainers));
         }
 
         [HttpPost]
@@ -133,9 +253,9 @@ namespace GymFit.Web.Controllers
 
                 return Json(new { success = true, message = "Trainer deleted successfully" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = ex.Message });
+                return StatusCode(500, new { success = false, message = "Unable to complete the operation right now. Please try again." });
             }
         }
     }

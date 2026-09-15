@@ -17,6 +17,7 @@
             <div class="col-md-6"><label asp-for="EmergencyContact" class="form-label"></label><input asp-for="EmergencyContact" class="form-control" /><span asp-validation-for="EmergencyContact" class="text-danger"></span></div>
             <div class="col-12"><label asp-for="Address" class="form-label"></label><textarea asp-for="Address" class="form-control"></textarea><span asp-validation-for="Address" class="text-danger"></span></div>
             <div class="col-12"><label asp-for="MedicalConditions" class="form-label"></label><textarea asp-for="MedicalConditions" class="form-control"></textarea></div>
+            <div class="col-md-6"><label asp-for="PrimaryBranchId" class="form-label"></label><select asp-for="PrimaryBranchId" class="form-select" required><option value="">Select branch</option>@foreach (var branch in ViewBag.Branches) {<option value="@branch.Id">@branch.Name (@branch.Code)</option>}</select><span asp-validation-for="PrimaryBranchId" class="text-danger"></span></div>
         </div>
         <div class="mt-4"><button class="btn btn-danger" type="submit">Create member</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></div>
     </form>

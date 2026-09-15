@@ -1,0 +1,344 @@
+GYMFIT WEBSITE AUDIT REPORT
+Read-only source audit
+Audit date: 2026-09-14
+Repository: E:\Projects\GymFit\GymFit.sln
+Scope: All non-generated application source, configuration, migrations, SQL script, Razor views, custom JavaScript/CSS, and available test/build metadata. Vendor libraries and bin/obj artifacts were not treated as application implementation.
+
+STATUS DEFINITIONS
+[COMPLETE] Verified implemented in source and wired through the relevant layer.
+[PARTIALLY COMPLETE] Some implementation exists, but required behavior or end-to-end wiring is incomplete.
+[MISSING] No implementation was found in the audited repository.
+[BUG] Verified defect, broken route, invalid behavior, or security vulnerability.
+[NEEDS IMPROVEMENT] Implemented but materially weak for correctness, maintainability, security, performance, or production operation.
+[NOT APPLICABLE] Requirement does not apply to the implementation found.
+
+IMPORTANT LIMITATIONS
+- This was a static/read-only audit. No production database, browser session, external identity provider, payment gateway, mail/SMS provider, or deployed infrastructure was available for runtime verification.
+- COMPLETE means verified from repository implementation, not verified in a live environment.
+- No stored procedures, separate test project, Docker configuration, CI/CD pipeline, backup automation, or deployment manifest was found.
+- The solution builds successfully; this does not prove every browser route or database path works at runtime.
+
+1. OVERVIEW
+The repository contains a .NET 8 ASP.NET Core web application using MVC controllers and Razor views, despite the workspace context referring to Razor Pages. It has Domain, Application, Infrastructure, Services, and Web projects. Identity roles Admin, Reception, Trainer, and Member are seeded/configured. Core management flows exist for members, trainers, plans, subscriptions, payments, attendance, workouts, branches, enquiries, dashboards, profiles, and logs.
+
+The implementation is not production-ready. Several UI routes do not match controller routes, multiple views call actions that do not exist, payment/contact/branch UI wiring is broken, authorization is mainly controller-boundary based, and several AJAX paths insert unencoded server data into HTML. Business invariants for duplicate check-in, duplicate payments, subscription uniqueness, ownership, and transaction atomicity are incomplete. No automated tests were found.
+
+Overall source assessment: substantial prototype/early application implementation with a successful compile, but incomplete end-to-end correctness and high-priority security/operational work remaining.
+
+2. TECH STACK
+[COMPLETE] .NET 8 target framework: GymFit/GymFit.Web.csproj; all five projects target net8.0.
+[COMPLETE] ASP.NET Core MVC controllers with Razor views: GymFit/GymFit.Web.csproj, GymFit/Program.cs, GymFit/Views.
+[COMPLETE] EF Core 8 SQL Server provider and migrations: GymFit.Infrastructure/GymFit.Infrastructure.csproj, GymFit.Infrastructure/Data/ApplicationDbContext.cs, GymFit.Infrastructure/Migrations.
+[COMPLETE] ASP.NET Core Identity with ApplicationUser and IdentityRole: GymFit/Program.cs, GymFit.Domain/Entities/ApplicationUser.cs.
+[COMPLETE] AutoMapper for member/contact mappings: GymFit.Application/Mappings/AutoMapperProfile.cs.
+[PARTIALLY COMPLETE] Repository/unit-of-work pattern: GymFit.Application/Interfaces and GymFit.Infrastructure/Repositories, UnitOfWork; repository operations exist but no transaction API, pagination, cancellation, projection, or no-tracking contract.
+[PARTIALLY COMPLETE] jQuery, Bootstrap, validation, Chart.js, DataTables and custom JS/CSS: GymFit/Views/Shared layouts and GymFit/wwwroot. Versions/API usage are inconsistent in places.
+[MISSING] Stored procedure layer.
+[MISSING] Automated test framework/project.
+[MISSING] Payment gateway, notification provider, diet/progress/measurement provider, or external production integration.
+
+3. STRUCTURE
+[COMPLETE] GymFit.Domain: entities and enums.
+[COMPLETE] GymFit.Application: DTOs, view models, interfaces, mappings.
+[COMPLETE] GymFit.Infrastructure: DbContext, migrations, seed initializer, repositories, unit of work.
+[PARTIALLY COMPLETE] GymFit.Services: member, attendance, membership, payment, dashboard services. Several services are concrete-only and the services project references Infrastructure directly.
+[PARTIALLY COMPLETE] GymFit web layer: controllers and views are present, but duplicate/parallel dashboard views and controller/view route mismatches exist.
+[NEEDS IMPROVEMENT] GymFit.Application/Class1.cs and GymFit.Infrastructure/Class1.cs are placeholder files.
+[NEEDS IMPROVEMENT] Program.cs contains commented middleware/routes and an unused startupLogger variable at the end.
+
+4. ROLE/ACCESS AUDIT
+Admin:
+[PARTIALLY COMPLETE] Admin-only dashboard, branches, logs, trainer management, and member management are protected by controller/action authorization. Evidence: AdminDashboardController.cs, BranchesController.cs, LogsController.cs, TrainersController.cs, MembersController.cs.
+[BUG] Admin log ClearOldLogs and TestError POST actions have no ValidateAntiForgeryToken. Evidence: GymFit/Controllers/LogsController.cs.
+[BUG] Admin views use incorrect /Admin/Dashboard, /Admin/Branches, and /Admin/Members routes while controllers use conventional controller routes. Evidence: GymFit/Views/Admin/Dashboard/Index.cshtml, Views/Admin/Branches/Index.cshtml, Views/Admin/Members/Index.cshtml; corresponding controllers.
+[NEEDS IMPROVEMENT] Admin services trust caller-supplied IDs and rely on controller authorization rather than defense-in-depth service authorization.
+
+Reception:
+[PARTIALLY COMPLETE] Reception dashboard, members, attendance, payments, membership-plan read, membership assignment, and enquiries are exposed in controllers.
+[NEEDS IMPROVEMENT] Reception can perform broad management operations by client-supplied IDs; business constraints are not consistently validated in services.
+[NEEDS IMPROVEMENT] Reception UI/dashboard is minimal and does not demonstrate complete operational reporting or branch scoping.
+
+Trainer:
+[PARTIALLY COMPLETE] Trainer dashboard and member-details ownership check exist. Workout-plan creation checks that the member is assigned to the current trainer.
+[BUG] Trainer view generates Edit and ToggleStatus actions not implemented by TrainersController.
+[NEEDS IMPROVEMENT] Trainer branch assignment and multi-branch availability are modeled but not operationally managed.
+[PARTIALLY COMPLETE] TrainersController includes duplicate/dead dashboard/list implementation paths.
+
+Member:
+[PARTIALLY COMPLETE] Member dashboard, profile, workouts, attendance, and payment pages scope current-user data in the relevant controllers.
+[NEEDS IMPROVEMENT] Member profile appears read-only/incomplete; no member self-service renewal/payment/profile update flow is verified.
+[MISSING] Member diet, progress, measurements, notifications, reports, and exercise-management UI.
+
+Direct URL/AJAX access:
+[COMPLETE] Most controller-level role attributes protect direct URLs independently of navigation visibility.
+[PARTIALLY COMPLETE] Member and trainer ownership checks are present in member-specific paths, but service/repository methods themselves do not enforce authorization.
+[BUG] Missing route/action names make some authorized UI AJAX calls fail rather than bypass access.
+[BUG] Missing antiforgery token on raw branch AJAX conflicts with the protected Create action and results in rejected requests; unsafe generic AJAX helpers do not automatically add tokens.
+
+5. MODULE AUDIT
+Members
+[PARTIALLY COMPLETE] Admin/Reception list, create, details, edit, and soft-delete controller/service paths exist. Evidence: MembersController.cs, MemberService.cs, MemberRepository.cs, MemberViewModel.cs.
+[BUG] Admin member view calls nonexistent /Admin/Members/GetAll and /Admin/Members/Delete; no GetAll action exists on MembersController.
+[NEEDS IMPROVEMENT] Create commits EF member before Identity role assignment; update changes Identity and EF state without a shared transaction.
+[NEEDS IMPROVEMENT] Delete is soft delete only and does not deactivate linked Identity user or enforce subscription/attendance policy.
+
+Trainers
+[PARTIALLY COMPLETE] Admin list/create/delete and trainer dashboard/member detail paths exist.
+[BUG] Edit and ToggleStatus links/forms have no matching controller actions.
+[NEEDS IMPROVEMENT] Trainer creation and user/member relationships are not covered by a dedicated application service contract.
+[MISSING] Complete trainer edit/status/branch-assignment CRUD.
+
+Membership plans
+[PARTIALLY COMPLETE] Active plan listing, admin create/delete, public plan display, and seed plans exist.
+[NEEDS IMPROVEMENT] Update/edit path is missing; delete behavior and existing subscriptions are not shown as protected from destructive effects.
+[NEEDS IMPROVEMENT] Plan validation does not visibly enforce positive price/duration or duplicate business semantics beyond database Name uniqueness.
+
+Memberships/subscriptions/expiry/renewal
+[BUG] MembershipService constructs a Subscription but does not add it to a repository before SaveAsync; this path cannot persist the new subscription as written. Evidence: GymFit.Services/MembershipService.cs.
+[PARTIALLY COMPLETE] MembershipsController has assignment logic that updates/inserts subscription records, but no explicit transaction/concurrency/unique-active-subscription enforcement.
+[PARTIALLY COMPLETE] Dashboard can display expired/expiring data, but no scheduled expiry transition or renewal workflow is verified.
+[MISSING] Member self-service renewal, grace-period policy, automatic expiry job, cancellation/refund policy.
+
+Payments
+[PARTIALLY COMPLETE] Admin/Reception list, stats, member lookup, and record-payment path exist; member payment history is scoped by current user.
+[BUG] Record Payment button is outside recordPaymentForm and the script searches for a submit button inside the form; verified in Views/Payments/Index.cshtml.
+[NEEDS IMPROVEMENT] Amount, member/subscription validity, currency, payment method, authorization, idempotency, receipt, refund, and transaction rules are incomplete.
+[NEEDS IMPROVEMENT] Payment status is set by application code without an external settlement source.
+
+Attendance/check-in/out
+[PARTIALLY COMPLETE] Admin/Reception check-in and checkout, member history, and today listing exist.
+[BUG] Check-in unconditionally inserts a record; duplicate open attendance is not prevented and concurrent requests can create duplicates.
+[NEEDS IMPROVEMENT] Check-in/out uses UTC writes but local DateTime.Now/Date comparisons in queries; timezone/business-day behavior is undefined.
+[NEEDS IMPROVEMENT] No branch access validation, device/operator audit, correction workflow, or attendance pagination.
+
+Workout plans/exercises
+[PARTIALLY COMPLETE] Trainer/admin create and member/trainer read paths exist; exercises are modeled and included.
+[BUG] WorkoutPlans view is only a minimal view and no complete exercise CRUD is verified.
+[NEEDS IMPROVEMENT] Trainer ownership is checked for creation but broader update/delete ownership paths are absent.
+[MISSING] Workout progress tracking, exercise history, diet integration, measurements, and progress reports.
+
+Branches/equipment/multi-branch access
+[PARTIALLY COMPLETE] Branch entity, list, counts, and admin create endpoint exist.
+[BUG] Admin branch view uses nonexistent /Admin/Branches routes, posts raw AJAX without antiforgery token, and expects different response properties.
+[BUG] Branch list renders branch.members.length/trainers.length while API returns MemberCount/TrainerCount; counts display incorrectly.
+[MISSING] Branch edit/delete, equipment CRUD, member branch access CRUD, trainer branch assignment CRUD, branch-level authorization.
+
+Enquiries/contact
+[PARTIALLY COMPLETE] Anonymous contact form, ContactMessage persistence, admin/reception list, mark-read and delete actions exist.
+[BUG] Phone field is outside contactForm and is not posted; client form has no robust error callback and validation script inclusion is not verified for this page.
+[NEEDS IMPROVEMENT] No spam/rate limiting, CAPTCHA, notification workflow, audit trail, or assignment/status model beyond IsRead.
+
+Dashboards/reports
+[PARTIALLY COMPLETE] Admin dashboard aggregate statistics and reception dashboard exist; trainer/member dashboards exist.
+[BUG] Admin/Dashboard view calls /Admin/Dashboard/GetStats but AdminDashboardController exposes /AdminDashboard/GetStats.
+[NEEDS IMPROVEMENT] DashboardService loads whole tables and aggregates in memory; chart and recent-member data lack robust error/loading handling.
+[MISSING] Formal exportable reports, scheduled reports, audit reports, branch reports, attendance reports, payment reconciliation reports.
+
+Profiles
+[PARTIALLY COMPLETE] Identity fields and member/trainer profile display exist.
+[MISSING] Verified secure profile edit, password change, email change confirmation, profile-picture upload validation/storage, and account self-service lifecycle.
+
+Notifications
+[MISSING] No notification entity, service, UI, queue, email/SMS/push provider, or notification preferences found.
+
+Diet/progress/measurements
+[MISSING] No entities, DbSets, repositories, services, controllers, views, or scripts found for diet plans, progress tracking, body measurements, goals, or progress charts.
+
+Logs
+[PARTIALLY COMPLETE] Admin log retrieval/cleanup UI and file logging service exist.
+[BUG] TestError is exposed as an admin POST debug endpoint and log clear lacks antiforgery validation.
+[NEEDS IMPROVEMENT] Logs are plaintext local files with no rotation, structured fields, centralized monitoring, access audit, or scheduled cleanup.
+
+6. CRUD AUDIT
+[COMPLETE] Generic repository exposes GetById/GetAll/Find/Add/Update/Delete/Exists.
+[PARTIALLY COMPLETE] Members: create/read/update path exists; delete is soft delete; UI route defects remain.
+[PARTIALLY COMPLETE] Trainers: create/read/delete exists; edit/status missing.
+[PARTIALLY COMPLETE] Membership plans: create/read/delete exists; update missing.
+[PARTIALLY COMPLETE] Subscriptions: assignment path exists in controller, but service path fails to add entity and no complete read/update/delete/renewal lifecycle is verified.
+[PARTIALLY COMPLETE] Payments: create/read exists; update/delete/refund/receipt/reconciliation missing.
+[PARTIALLY COMPLETE] Attendance: create/check-out/read exists; correction/delete/export/duplicate prevention missing.
+[PARTIALLY COMPLETE] Workout plans: create/read exists; update/delete/exercise CRUD missing.
+[PARTIALLY COMPLETE] Branches: read/create exists; edit/delete/equipment/access/assignment missing.
+[PARTIALLY COMPLETE] Enquiries: create/read/mark-read/delete exists; assignment/status/response/notification missing.
+[MISSING] Diet, progress, measurements, notifications, reports, audit trail, and equipment CRUD.
+
+7. DATABASE AUDIT
+[COMPLETE] Identity tables and application tables are represented in EF migrations and SQL script.
+[COMPLETE] PKs and major FKs exist for members, trainers, subscriptions, payments, attendance, workouts, exercises, branches, and Identity.
+[COMPLETE] Unique indexes for Member.UserId, Trainer.UserId, MembershipPlan.Name, Branch.Code exist in ApplicationDbContext.
+[COMPLETE] ContactMessages composite IsRead/CreatedAt index exists.
+[PARTIALLY COMPLETE] Delete behavior is configured for several relationships, including restrictive branch/plan/trainer relationships and cascading member-owned records.
+[NEEDS IMPROVEMENT] No explicit indexes are configured for frequent PaymentDate/Status, Subscription end/status, Attendance CheckInTime, or common MemberId/date query combinations.
+[NEEDS IMPROVEMENT] Code mixes UTC timestamps with local DateTime.Now and Date extraction; database business-day semantics are not defined.
+[NEEDS IMPROVEMENT] No optimistic concurrency token, unique active-subscription constraint, payment idempotency key, or attendance-open-record constraint is verified.
+[PARTIALLY COMPLETE] Migrations 20251217100341_InitialCreate, 20251219051507_FixBranchFKs, and 20260914043247_CompleteAuditSchema exist; generated CompleteAuditSchema.sql exists.
+[NEEDS IMPROVEMENT] DbInitializer applies migrations automatically during application startup and continues startup after migration/seed failure.
+[NEEDS IMPROVEMENT] Seed data includes hard-coded admin@gymfit.com / Admin@123 in DbInitializer.cs. Roles and plans are seeded, but trainer/member/branch operational seed coverage is incomplete.
+[MISSING] Stored procedures.
+[MISSING] Backup/restore scripts, retention policies, data archival, audit tables, and operational database health checks.
+
+8. FRONTEND AUDIT
+[BUG] Admin branch/member/dashboard views call routes/actions that do not exist on controllers.
+[BUG] Payment form structure prevents the record handler from finding the submit button/form submission.
+[BUG] Contact phone is outside the form; value is not posted.
+[BUG] Branch UI expects members/trainers arrays but API returns MemberCount/TrainerCount.
+[BUG] Bootstrap 4 jQuery modal syntax is used with Bootstrap 5 assets in Attendance and Payments views.
+[BUG] Admin dashboard loads Chart.js again although admin layout already loads it.
+[BUG] Trainer view contains debugger statement/development artifact.
+[BUG] AJAX error/loading handling is incomplete; several requests only display generic or no feedback.
+[BUG] Database/API-controlled values are inserted into innerHTML/jQuery.html without encoding in dashboard, branch, payment, attendance, plan, and toast paths. This creates stored/reflected XSS risk when attacker-controlled data reaches those fields.
+[PARTIALLY COMPLETE] DataTables is used for the member list, but no consistent server-side pagination is implemented.
+[PARTIALLY COMPLETE] Client validation scripts exist, but inclusion/use is inconsistent and server validation/error display is not consistently wired.
+[PARTIALLY COMPLETE] Admin mobile sidebar CSS exists; complete responsive behavior across all views was not verified from source alone.
+[NEEDS IMPROVEMENT] External CDN assets have no visible SRI; one About image uses HTTP.
+
+9. BACKEND AUDIT
+[COMPLETE] Controllers generally use async actions and model validation attributes are present on several view models.
+[PARTIALLY COMPLETE] Service/repository layering exists, but concrete services expose domain entities and DashboardService directly references ApplicationDbContext/Infrastructure.
+[BUG] Several catch blocks return raw exception messages to clients: MembersController, BranchesController, MembershipPlansController, PaymentsController, TrainersController.
+[NEEDS IMPROVEMENT] Many services catch all exceptions and return false, losing error classification and making operational diagnosis/business response ambiguous.
+[NEEDS IMPROVEMENT] UnitOfWork has no Begin/Commit/Rollback API, retry policy, concurrency handling, or async disposal.
+[NEEDS IMPROVEMENT] Generic repository materializes unbounded tracked collections and has no cancellation, projection, pagination, or AsNoTracking options.
+[BUG] MembershipService subscription creation does not add the new entity before SaveAsync.
+[NEEDS IMPROVEMENT] Payment and membership writes lack transactional/idempotent business enforcement.
+[PARTIALLY COMPLETE] Global exception logging middleware returns generic errors for many requests, but controller-level raw error responses can bypass the desired behavior.
+[NEEDS IMPROVEMENT] Startup resolves startupLogger but never uses it.
+
+10. SECURITY
+[P1 BUG] Login calls PasswordSignInAsync with lockoutOnFailure:false, disabling the configured failed-attempt lockout. Evidence: GymFit/Controllers/AccountController.cs and Program.cs.
+[P2 BUG] Email confirmation is disabled; new registrations are automatically usable without proving email ownership.
+[P2 BUG] Auth and session cookies do not explicitly set SecurePolicy and SameSite; HTTPS redirection is not a replacement for secure cookie configuration.
+[P2 BUG] ClearOldLogs and TestError are state-changing/admin POST endpoints without antiforgery validation.
+[P2 BUG] Generic AJAX helper does not automatically attach antiforgery tokens; raw branch AJAX has no token while Create requires validation.
+[P2 BUG] Multiple HTML insertion sinks use unencoded interpolated values, enabling stored XSS if database-controlled fields contain markup/script.
+[P2 BUG] Several controller catch responses disclose raw exception messages.
+[P2 BUG] Security headers such as CSP, X-Content-Type-Options, frame protection, Referrer-Policy, and Permissions-Policy are not configured.
+[P2 BUG] Exception logs persist raw messages, inner messages, stack traces, URLs, and usernames in plaintext application files.
+[P2 NEEDS IMPROVEMENT] CDN scripts/styles are loaded without visible integrity attributes.
+[P3 NEEDS IMPROVEMENT] appsettings.json contains a workstation-specific SQL connection string with trustservercertificate=true and MultipleActiveResultSets=true.
+[P3 NEEDS IMPROVEMENT] AllowedHosts is wildcard.
+[P3 NEEDS IMPROVEMENT] Default admin password is committed in source seed code.
+[COMPLETE] No raw SQL/FromSql/ExecuteSql or string-concatenated SQL injection path was found in audited application source; EF LINQ is used.
+[PARTIALLY COMPLETE] IDOR protection is present at controller level for member self-service and trainer assigned-member views. Defense-in-depth service authorization and branch-level scoping are missing.
+[MISSING/NOT APPLICABLE] File-upload code was not found; upload security could not be validated because profile-picture storage is modeled but no upload workflow was found.
+
+11. PERFORMANCE
+[P1 NEEDS IMPROVEMENT] DashboardService loads all members, trainers, and payments into memory and aggregates there.
+[P1 NEEDS IMPROVEMENT] Generic GetAll/Find and multiple controllers materialize unbounded tracked collections.
+[P1 NEEDS IMPROVEMENT] Enquiries and today-attendance endpoints have no pagination/result limit.
+[P2 NEEDS IMPROVEMENT] Includes are used before scalar projections in branches/trainers; workout/member includes can create wide joins and tracking overhead.
+[P2 NEEDS IMPROVEMENT] Active member count loads full member data instead of CountAsync.
+[P2 NEEDS IMPROVEMENT] Payment stats execute multiple separate queries and use non-sargable Date filters.
+[P2 NEEDS IMPROVEMENT] Payment page makes three independent initial API calls and reloads all data/statistics after writes.
+[P2 NEEDS IMPROVEMENT] Attendance page separately loads members and attendance and reloads the entire attendance set after check-in/out.
+[P2 NEEDS IMPROVEMENT] No stable pagination/sorting contract exists for major tables.
+[P2 NEEDS IMPROVEMENT] No explicit indexes for frequent date/status and member/date access patterns.
+[P1 NEEDS IMPROVEMENT] Check-in and payment writes lack duplicate/concurrency protection; retry behavior can create duplicate records.
+[P2 NEEDS IMPROVEMENT] Startup runs migrations and seed queries on every instance startup, which can cause startup contention.
+[PARTIALLY COMPLETE] Response compression/caching middleware is registered, but no safe endpoint-specific cache policy is visible.
+
+12. ERRORS/BUGS
+| Module | Role | File(s) | DB change YES/NO | Current condition | Required action | Priority | Complexity |
+|---|---|---|---|---|---|---|---|
+| Admin dashboard | ADMIN | Views/Admin/Dashboard/Index.cshtml; Controllers/AdminDashboardController.cs | NO | View calls /Admin/Dashboard/GetStats; controller exposes /AdminDashboard/GetStats. | Align route/controller/view and add an integration test. | P1 | Low |
+| Admin branches | ADMIN | Views/Admin/Branches/Index.cshtml; Controllers/BranchesController.cs | NO | /Admin routes, missing Details/Delete, raw AJAX lacks antiforgery, response property mismatch. | Use generated routes, add missing actions or remove UI, serialize token, align DTO. | P1 | Medium |
+| Admin members | ADMIN | Views/Admin/Members/Index.cshtml; Controllers/MembersController.cs | NO | Calls nonexistent /Admin/Members/GetAll/Delete. | Align routes and implement/verify actions. | P1 | Low |
+| Trainers | ADMIN/TRAINER | Views/Trainers/GetAllTrainers.cshtml; Controllers/TrainersController.cs | NO | Edit and ToggleStatus links have no actions. | Implement complete edit/status or remove controls. | P1 | Medium |
+| Payments | ADMIN/RECEPTION | Views/Payments/Index.cshtml | NO | Submit button is outside form and handler cannot find it. | Correct form/button nesting and add UI test. | P1 | Low |
+| Contact | PUBLIC | Views/Home/Contact.cshtml; Controllers/HomeController.cs | NO | Phone input is outside form and no robust AJAX error path. | Move field into form and handle validation/network errors. | P2 | Low |
+| Branch listing | ADMIN | Views/Branches/Index.cshtml; Controllers/BranchesController.cs | NO | UI reads members.length/trainers.length; API returns MemberCount/TrainerCount. | Align response contract and add DTO. | P2 | Low |
+| Attendance | ADMIN/RECEPTION | Views/Attendance/Index.cshtml; Services/AttendanceService.cs | YES | Duplicate open check-ins are accepted; modal API likely mismatches Bootstrap version. | Enforce open-record uniqueness/transaction and use Bootstrap 5 API. | P1 | Medium |
+| Payments | ADMIN/RECEPTION | Controllers/PaymentsController.cs; Services/PaymentService.cs; PaymentRepository.cs | YES | No amount/member/subscription validation, idempotency, or duplicate protection. | Add domain validation, idempotency key/unique index, transaction, reconciliation. | P1 | High |
+| Membership assignment | ADMIN/RECEPTION | Services/MembershipService.cs; Controllers/MembershipsController.cs | YES | Service constructs subscription but does not AddAsync; controller path can create concurrent active rows. | Add entity, transaction, unique active rule, concurrency tests. | P0 | Medium |
+| Authentication | ALL | Controllers/AccountController.cs; Program.cs | NO | lockoutOnFailure=false; email confirmation disabled. | Enable lockout counting, confirm email, add abuse/rate-limit controls. | P1 | Medium |
+| XSS | ALL | Views/AdminDashboard/Index.cshtml; Views/Branches/Index.cshtml; Views/Payments/Index.cshtml; Views/Attendance/Index.cshtml; Views/MembershipPlans/Index.cshtml; wwwroot/js/toast.js | NO | Unencoded API/database values are inserted into HTML. | Use textContent/DOM APIs or encoding; add XSS tests and CSP. | P0 | Medium |
+| Admin logs | ADMIN | Controllers/LogsController.cs; Views/Admin/Logs/Index.cshtml | NO | Clear/test POSTs lack antiforgery; TestError remains exposed. | Add antiforgery and remove/compile out debug endpoint. | P1 | Low |
+| Error handling | ALL | Controllers listed in section 9; Middleware/ExceptionHandlingMiddleware.cs | NO | Raw exception details returned; logs contain sensitive infrastructure data. | Return stable problem IDs, sanitize logs, centralize handling. | P1 | Medium |
+| Query scalability | ALL | GenericRepository.cs; DashboardService.cs; controllers | YES | Unbounded tracked loads and in-memory aggregation. | Add projections, Count/Sum server queries, paging, no-tracking, indexes. | P1 | High |
+| Branch access | ADMIN/RECEPTION/TRAINER/MEMBER | Domain branch/access entities; ApplicationDbContext.cs; controllers | YES | Entities exist but no complete access/assignment workflow or enforcement. | Implement branch CRUD/assignment and query filters/policies. | P1 | High |
+
+13. MISSING REQUIREMENTS
+| Module | Role | File(s) | DB change YES/NO | Current condition | Required action | Priority | Complexity |
+|---|---|---|---|---|---|---|---|
+| Diet plans | TRAINER/MEMBER | No implementation found | YES | No diet entities, services, controllers, views, or APIs. | Define schema, ownership, CRUD, validation, UI, tests. | P2 | High |
+| Progress tracking | TRAINER/MEMBER | No implementation found | YES | No goals/progress records/charts/workflow. | Add domain model, entries, authorization, reporting. | P2 | High |
+| Measurements | TRAINER/MEMBER | No implementation found | YES | No body measurement data model or UI. | Add measurement history and validation/reporting. | P2 | Medium |
+| Notifications | ALL | No implementation found | YES | No notification persistence/provider/UI/preferences. | Add notification abstraction, queue/provider, templates, preferences. | P2 | High |
+| Reports | ADMIN/RECEPTION/TRAINER | DashboardService and views only | MAYBE | Dashboard summaries exist, formal reports/export/audit reports do not. | Add server-side report queries, exports, authorization, tests. | P2 | High |
+| Exercise CRUD | TRAINER/ADMIN | Exercise.cs; WorkoutPlan.cs; WorkoutPlansController.cs | YES | Exercise model exists but no complete CRUD UI/API. | Add exercise commands, ownership checks, validation, indexes. | P2 | Medium |
+| Trainer status/edit | ADMIN | TrainersController.cs; Trainers/GetAllTrainers.cshtml | NO/YES | UI advertises actions that are absent. | Implement status/edit and related validation. | P1 | Medium |
+| Equipment management | ADMIN/RECEPTION | BranchEquipment.cs; no controller/view | YES | Entity exists; no operational module. | Add CRUD, branch ownership, inventory fields/indexes. | P2 | Medium |
+| Multi-branch access | ADMIN/RECEPTION | MemberBranchAccess.cs; TrainerBranchAssignment.cs | YES | Entities exist; no complete workflow/enforcement. | Add assignments, uniqueness constraints, query authorization. | P1 | High |
+| Renewal/expiry job | ADMIN/RECEPTION/MEMBER | Subscription.cs; DashboardService.cs | YES | Read-only expired/expiring calculations; no scheduled state transition/renewal. | Add lifecycle rules/job and tests. | P1 | High |
+| Profile editing/upload | MEMBER/TRAINER | ApplicationUser.cs; profile views | YES | Profile picture property exists but upload/security flow absent. | Implement validated storage or remove property; add password/email change. | P2 | Medium |
+| Automated tests | ALL | No test project/source found | NO | No discovered test project or tests. | Add unit, integration, authorization, security, UI/API contract tests. | P0 | High |
+| Production deployment | OPERATIONS | No Docker/CI/CD/health/backup files | NO | Only local launch settings and project files exist. | Define deployment, secrets, migrations, health, monitoring, backup/restore. | P1 | High |
+
+14. REQUIRED DB CHANGES
+1. Add unique/business constraint preventing more than one active subscription per member, or implement a transactional lifecycle strategy that guarantees the invariant.
+2. Add payment idempotency/receipt identifier with a unique index; define currency, amount precision, status, refund, and external transaction semantics.
+3. Add attendance open-record/duplicate prevention strategy, potentially a filtered unique index or transactional application rule; add business-day/branch indexes.
+4. Add indexes for PaymentDate plus status, Subscription end/status, Attendance MemberId plus CheckInTime, WorkoutPlan MemberId/TrainerId, and common branch queries after query shape is finalized.
+5. Add optimistic concurrency tokens to mutable aggregates where concurrent receptionist/admin edits are possible.
+6. Complete foreign keys and uniqueness for MemberBranchAccess and TrainerBranchAssignment, including duplicate-assignment prevention.
+7. Add schema/entities for diet, progress, measurements, notifications, reports/audit events, equipment, and trainer status only if those requirements are approved.
+8. Do not apply schema changes by this report. Generate and review migrations after domain/business rules are finalized.
+
+15. PRODUCTION/DEPLOYMENT
+[NOT READY] appsettings.json contains a committed workstation-specific connection string, trustservercertificate=true, wildcard AllowedHosts, and empty WhatsApp configuration.
+[NOT READY] DbInitializer applies migrations and seeds a default admin password during application startup; startup continues after failure.
+[PARTIALLY COMPLETE] Production exception handler and HSTS exist when environment is not Development.
+[NOT READY] No explicit secure cookie/SameSite configuration, security headers, persistent data-protection keys, distributed session, health endpoint, monitoring integration, backup/restore workflow, or deployment pipeline.
+[NOT READY] File logs have no rotation/retention scheduler/central shipping and can grow without bound.
+[PARTIALLY COMPLETE] Local HTTP/HTTPS launch profiles exist; they are not production deployment configuration.
+[PARTIALLY COMPLETE] Response compression is configured; response caching requires review for authenticated/dynamic data.
+[NEEDS IMPROVEMENT] CDN and external HTTP assets should be pinned, integrity-protected, or self-hosted over HTTPS.
+
+16. PRIORITIZED REMAINING WORK
+P0 - Immediate security/correctness blockers
+1. Fix stored XSS sinks and establish an encoding/CSP policy.
+2. Fix subscription creation persistence and enforce one active subscription with a transaction/concurrency rule.
+3. Add automated tests for authorization, XSS-safe rendering, subscription, payment, attendance, and route contracts.
+
+P1 - High priority before production
+1. Fix all route/action/form/AJAX mismatches in admin dashboards, branches, members, trainers, payments, and contact.
+2. Enable login lockout counting, email confirmation or verified onboarding, secure cookies, antiforgery on every state-changing endpoint, and security headers.
+3. Remove TestError and raw exception responses; sanitize and centralize error handling/logging.
+4. Add payment idempotency, validation, transaction/reconciliation, and duplicate check-in protection.
+5. Replace unbounded/in-memory queries with server-side projections, aggregates, paging, no-tracking, and indexes.
+6. Implement branch access/assignment enforcement and complete trainer/plan/workout CRUD.
+7. Establish secrets management, production connection configuration, health checks, persistent data protection, logging/monitoring, backup/restore, and deployment automation.
+
+P2 - Functional completeness and resilience
+1. Implement diet, progress, measurements, notifications, reports, equipment, profile editing, renewal/expiry automation, and missing CRUD.
+2. Add consistent client/server validation, loading/error states, responsive QA, route integration tests, and safe frontend rendering.
+3. Add log rotation/retention and operational audit events.
+
+P3 - Cleanup and optimization
+1. Remove duplicate/commented code, placeholder classes, unused startupLogger, duplicate script loads, debugger statements, and stale development comments.
+2. Review AllowedHosts, CDN SRI, HTTP external images, and response-cache policy.
+3. Add cancellation tokens, async disposal, structured DTO contracts, and centralized service interfaces.
+
+17. COMPLETION %
+Scoring method: evidence-based estimate by audited implementation areas. A complete score requires both implementation and verified end-to-end wiring; missing runtime dependencies and absent tests reduce the score. Percentages are not claims of live production test coverage.
+
+OVERALL 48%
+ADMIN 58%
+RECEPTION 51%
+TRAINER 45%
+MEMBER 42%
+DATABASE 62%
+FRONTEND 39%
+BACKEND 57%
+SECURITY 35%
+PRODUCTION 28%
+
+FINAL STATUS SUMMARY
+Core CRUD prototype: [PARTIALLY COMPLETE]
+Role routing/authorization foundation: [PARTIALLY COMPLETE]
+End-to-end UI reliability: [BUG]
+Database foundation: [PARTIALLY COMPLETE]
+Security posture: [BUG]
+Performance/scalability: [NEEDS IMPROVEMENT]
+Automated verification: [MISSING]
+Production readiness: [NEEDS IMPROVEMENT]

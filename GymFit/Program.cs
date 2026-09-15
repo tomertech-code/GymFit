@@ -1,4 +1,4 @@
-using GymFit.Application.Interfaces;
+﻿using GymFit.Application.Interfaces;
 using GymFit.Application.Mappings;
 using GymFit.Domain.Entities;
 using GymFit.Infrastructure.Data;
@@ -32,7 +32,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 8;
     // Lockout settings
@@ -51,6 +50,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
     options.ExpireTimeSpan = TimeSpan.FromHours(24);
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
@@ -81,10 +82,14 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 
 // Add Response Compression
+builder.Services.AddHealthChecks();
+
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
@@ -133,6 +138,13 @@ app.UseResponseCompression();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<ExceptionLoggingMiddleware>();
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    await next();
+});
 app.UseStaticFiles();
 app.UseResponseCaching();
 app.UseRouting();
@@ -142,7 +154,13 @@ app.UseAuthorization();
 
 app.UseSession();
 
+app.MapHealthChecks("/health");
+
 // Route Configuration
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
 //app.MapControllerRoute(
 //    name: "default",
 //    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
@@ -155,6 +173,4 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-var startupLogger = app.Services.GetRequiredService<ILoggingService>();
-
 app.Run();

@@ -39,7 +39,7 @@ namespace GymFit.Web.Controllers
                 return Json(new { success = false, message = "Invalid login data" });
 
             var result = await _signInManager.PasswordSignInAsync(
-                model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
@@ -91,7 +91,12 @@ namespace GymFit.Web.Controllers
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "Member");
+                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                if (!roleResult.Succeeded)
+                {
+                    await _userManager.DeleteAsync(user);
+                    return Json(new { success = false, message = "Unable to create the member account right now." });
+                }
 
                 var member = new GymFit.Domain.Entities.Member
                 {
@@ -111,7 +116,16 @@ namespace GymFit.Web.Controllers
 
                 member.PrimaryBranchId = branch.Id;
                 _context.Members.Add(member);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Member");
+                    await _userManager.DeleteAsync(user);
+                    throw;
+                }
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
 

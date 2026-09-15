@@ -1,4 +1,4 @@
-﻿using GymFit.Domain.Entities;
+using GymFit.Domain.Entities;
 using GymFit.Domain.Enums;
 using GymFit.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +28,7 @@ namespace GymFit.Web.Controllers
         {
             var plans = await _context.MembershipPlans
                 .OrderBy(p => p.Price)
+                .Take(200)
                 .Select(p => new
                 {
                     p.Id,
@@ -69,9 +70,9 @@ namespace GymFit.Web.Controllers
 
                 return Json(new { success = true, message = "Plan created successfully" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = ex.Message });
+                return StatusCode(500, new { success = false, message = "Unable to complete the operation right now. Please try again." });
             }
         }
 
@@ -91,9 +92,9 @@ namespace GymFit.Web.Controllers
 
                 return Json(new { success = true, message = "Plan deleted successfully" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = ex.Message });
+                return StatusCode(500, new { success = false, message = "Unable to complete the operation right now. Please try again." });
             }
         }
     }

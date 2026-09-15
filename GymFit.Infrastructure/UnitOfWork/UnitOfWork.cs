@@ -17,6 +17,7 @@ namespace GymFit.Infrastructure.UnitOfWork
         public IMemberRepository Members { get; }
         public ITrainerRepository Trainers { get; }
         public IMembershipRepository MembershipPlans { get; }
+        public ISubscriptionRepository Subscriptions { get; }
         public IAttendanceRepository Attendances { get; }
         public IPaymentRepository Payments { get; }
         public IWorkoutPlanRepository WorkoutPlans { get; }
@@ -27,6 +28,7 @@ namespace GymFit.Infrastructure.UnitOfWork
             Members = new MemberRepository(_context);
             Trainers = new TrainerRepository(_context);
             MembershipPlans = new MembershipRepository(_context);
+            Subscriptions = new SubscriptionRepository(_context);
             Attendances = new AttendanceRepository(_context);
             Payments = new PaymentRepository(_context);
             WorkoutPlans = new WorkoutPlanRepository(_context);

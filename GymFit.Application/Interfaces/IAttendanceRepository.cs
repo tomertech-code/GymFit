@@ -10,6 +10,7 @@ namespace GymFit.Application.Interfaces
 
     public interface IAttendanceRepository : IGenericRepository<Attendance>
     {
+        Task<Attendance?> GetOpenAttendanceAsync(int memberId);
         Task<IEnumerable<Attendance>> GetMemberAttendanceAsync(int memberId);
         Task<int> GetTodayAttendanceCountAsync();
     }

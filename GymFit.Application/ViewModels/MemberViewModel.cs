@@ -12,6 +12,10 @@ namespace GymFit.Application.ViewModels
     {
         public int Id { get; set; }
 
+        [Display(Name = "Primary Branch")]
+        [Range(1, int.MaxValue)]
+        public int PrimaryBranchId { get; set; }
+
         [Required]
         public string FirstName { get; set; } = string.Empty;
 

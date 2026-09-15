@@ -1,4 +1,4 @@
-﻿using GymFit.Application.Interfaces;
+using GymFit.Application.Interfaces;
 using GymFit.Application.ViewModels;
 using GymFit.Domain.Entities;
 using GymFit.Infrastructure.Data;
@@ -38,6 +38,18 @@ namespace GymFit.Web.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var members = await _context.Members.AsNoTracking()
+                .Include(m => m.User).Where(m => m.IsActive)
+                .OrderBy(m => m.User.LastName).ThenBy(m => m.User.FirstName)
+                .Take(500)
+                .Select(m => new { m.Id, m.User.FirstName, m.User.LastName, Email = m.User.Email ?? string.Empty, PhoneNumber = m.User.PhoneNumber ?? string.Empty, m.JoinDate, m.IsActive })
+                .ToListAsync();
+            return Json(members);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var member = await _memberService.GetMemberByIdAsync(id);
@@ -47,8 +59,9 @@ namespace GymFit.Web.Controllers
         }
 
         [HttpGet]
-        public  IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Branches = await _context.Branches.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
             return View();
         }
 
@@ -77,7 +90,12 @@ namespace GymFit.Web.Controllers
                 if (!result.Succeeded)
                     return Json(new { success = false, message = string.Join(", ", result.Errors.Select(e => e.Description)) });
 
-                await _userManager.AddToRoleAsync(user, "Member");
+                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                if (!roleResult.Succeeded)
+                {
+                    await _userManager.DeleteAsync(user);
+                    return BadRequest(new { success = false, message = "Unable to assign the Member role." });
+                }
 
                 // Create member profile
                 var member = new GymFit.Domain.Entities.Member
@@ -87,19 +105,42 @@ namespace GymFit.Web.Controllers
                     EmergencyContact = model.EmergencyContact,
                     MedicalConditions = model.MedicalConditions,
                     AssignedTrainerId = model.AssignedTrainerId,
-                    PrimaryBranchId = await _context.Branches.Where(b => b.IsActive).Select(b => b.Id).FirstOrDefaultAsync(),
+                    PrimaryBranchId = model.PrimaryBranchId,
                     JoinDate = DateTime.UtcNow,
                     IsActive = true
                 };
 
+                if (member.PrimaryBranchId <= 0 || !await _context.Branches.AnyAsync(b => b.Id == member.PrimaryBranchId && b.IsActive))
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Member");
+                    await _userManager.DeleteAsync(user);
+                    return BadRequest(new { success = false, message = "Please select an active primary branch." });
+                }
+
+                if (member.AssignedTrainerId.HasValue && !await _context.Trainers.AnyAsync(t => t.Id == member.AssignedTrainerId.Value && t.IsActive))
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Member");
+                    await _userManager.DeleteAsync(user);
+                    return BadRequest(new { success = false, message = "Selected trainer is not active." });
+                }
+
                 _context.Members.Add(member);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Member");
+                    await _userManager.DeleteAsync(user);
+                    throw;
+                }
 
                 return Json(new { success = true, message = "Member created successfully" });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(new { success = false, message = ex.Message });
+                return StatusCode(500, new { success = false, message = "Unable to create the member right now. Please try again." });
             }
         }
 
@@ -109,6 +150,12 @@ namespace GymFit.Web.Controllers
         {
             if (!ModelState.IsValid)
                 return Json(new { success = false, message = "Invalid data" });
+
+            if (!await _context.Branches.AnyAsync(b => b.Id == model.PrimaryBranchId && b.IsActive))
+                return BadRequest(new { success = false, message = "Please select an active primary branch." });
+
+            if (model.AssignedTrainerId.HasValue && !await _context.Trainers.AnyAsync(t => t.Id == model.AssignedTrainerId.Value && t.IsActive))
+                return BadRequest(new { success = false, message = "Selected trainer is not active." });
 
             var result = await _memberService.UpdateMemberAsync(model);
             if (result)
@@ -124,6 +171,7 @@ namespace GymFit.Web.Controllers
             if (member is null)
                 return NotFound();
 
+            ViewBag.Branches = await _context.Branches.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
             return View(new MemberViewModel
             {
                 Id = member.Id,
@@ -133,6 +181,8 @@ namespace GymFit.Web.Controllers
                 PhoneNumber = member.PhoneNumber,
                 Address = member.Address,
                 EmergencyContact = member.EmergencyContact,
+                PrimaryBranchId = member.PrimaryBranchId,
+                AssignedTrainerId = member.AssignedTrainerId
             });
         }
 

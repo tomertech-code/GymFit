@@ -215,17 +215,17 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="branch-card h-100 d-flex flex-column">
                                     <div class="branch-header">
-                                        <h4 class="text-white fw-bold">${branch.name}</h4>
+                                        <h4 class="text-white fw-bold">${escapeHtml(branch.name)}</h4>
                                         <span class="badge px-4 py-2 fs-6 ${branch.isActive ? 'bg-success' : 'bg-secondary'}">
                                             ${branch.isActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
-                                    <div class="branch-code">${branch.code}</div>
+                                    <div class="branch-code">${escapeHtml(branch.code)}</div>
                                     <div class="branch-info flex-grow-1">
-                                        <p><i class="fas fa-map-marker-alt"></i> ${branch.address}<br>
-                                           <span class="ms-4">${branch.city}, ${branch.state} ${branch.pinCode}</span></p>
-                                        <p><i class="fas fa-phone"></i> ${branch.phoneNumber}</p>
-                                        <p><i class="fas fa-envelope"></i> ${branch.email}</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> ${escapeHtml(branch.address)}<br>
+                                           <span class="ms-4">${escapeHtml(branch.city)}, ${escapeHtml(branch.state)} ${escapeHtml(branch.pinCode)}</span></p>
+                                        <p><i class="fas fa-phone"></i> ${escapeHtml(branch.phoneNumber)}</p>
+                                        <p><i class="fas fa-envelope"></i> ${escapeHtml(branch.email)}</p>
                                     </div>
                                     <div class="text-center mt-4">
                                         <div class="member-count">${branch.memberCount}</div>

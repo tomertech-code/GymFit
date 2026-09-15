@@ -85,7 +85,7 @@
         });
 
         function loadDashboardStats() {
-            ajaxHelper.get('/Admin/Dashboard/GetStats', function(data) {
+            ajaxHelper.get('/AdminDashboard/GetStats', function(data) {
                 $('#totalMembers').text(data.totalMembers);
                 $('#activeMembers').text(data.activeMembers);
                 $('#todayAttendance').text(data.todayAttendance);
@@ -96,8 +96,8 @@
                 data.recentMembers.forEach(function(member) {
                     membersList += `
                         <li class="list-group-item">
-                            <strong>${member.name}</strong><br>
-                            <small class="text-muted">${member.plan}</small>
+                            <strong>${escapeHtml(member.name)}</strong><br>
+                            <small class="text-muted">${escapeHtml(member.plan)}</small>
                         </li>
                     `;
                 });

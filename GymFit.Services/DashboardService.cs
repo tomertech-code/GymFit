@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,48 +24,60 @@ namespace GymFit.Services
 
         public async Task<DashboardStatsDto> GetDashboardStatsAsync()
         {
-            var stats = new DashboardStatsDto();
+            var now = DateTime.UtcNow;
+            var startOfToday = now.Date;
+            var startOfMonth = new DateTime(now.Year, now.Month, 1);
+            var startOfChart = startOfMonth.AddMonths(-11);
 
-            var allMembers = await _unitOfWork.Members.GetAllAsync();
-            stats.TotalMembers = allMembers.Count();
-            stats.ActiveMembers = allMembers.Count(m => m.IsActive);
+            var stats = new DashboardStatsDto
+            {
+                TotalMembers = await _context.Members.AsNoTracking().CountAsync(),
+                ActiveMembers = await _context.Members.AsNoTracking().CountAsync(m => m.IsActive),
+                TotalTrainers = await _context.Trainers.AsNoTracking().CountAsync(),
+                ExpiredMemberships = await _context.Subscriptions.AsNoTracking()
+                    .CountAsync(s => s.IsActive && s.EndDate < now),
+                TodayEnquiries = await _context.ContactMessages.AsNoTracking()
+                    .CountAsync(m => m.CreatedAt >= startOfToday && m.CreatedAt < startOfToday.AddDays(1)),
+                TodayAttendance = await _context.Attendances.AsNoTracking()
+                    .CountAsync(a => a.CheckInTime >= startOfToday && a.CheckInTime < startOfToday.AddDays(1)),
+                MonthlyRevenue = await _context.Payments.AsNoTracking()
+                    .Where(p => p.PaymentDate >= startOfMonth && p.Status == Domain.Enums.PaymentStatus.Completed)
+                    .SumAsync(p => (decimal?)p.Amount) ?? 0m
+            };
 
-            var trainers = await _unitOfWork.Trainers.GetAllAsync();
-            stats.TotalTrainers = trainers.Count();
-            stats.ExpiredMemberships = await _context.Subscriptions.CountAsync(s => s.IsActive && s.EndDate < DateTime.UtcNow);
-            stats.TodayEnquiries = await _context.ContactMessages.CountAsync(m => m.CreatedAt >= DateTime.UtcNow.Date);
-
-            stats.TodayAttendance = await _unitOfWork.Attendances.GetTodayAttendanceCountAsync();
-            stats.MonthlyRevenue = await _unitOfWork.Payments.GetMonthlyRevenueAsync();
-
-            // Get recent members
-            var recentMembers = allMembers
+            stats.RecentMembers = await _context.Members.AsNoTracking()
+                .Where(m => m.IsActive)
                 .OrderByDescending(m => m.JoinDate)
                 .Take(5)
                 .Select(m => new RecentMemberDto
                 {
-                    Name = $"{m.User.FirstName} {m.User.LastName}",
+                    Name = m.User.FirstName + " " + m.User.LastName,
                     JoinDate = m.JoinDate,
-                    Plan = m.Subscriptions.FirstOrDefault()?.MembershipPlan.Name ?? "No Plan"
+                    Plan = m.Subscriptions
+                        .OrderByDescending(s => s.CreatedAt)
+                        .Select(s => s.MembershipPlan.Name)
+                        .FirstOrDefault() ?? "No Plan"
                 })
-                .ToList();
+                .ToListAsync();
 
-            stats.RecentMembers = recentMembers;
-
-            // Get revenue chart data for last 6 months
-            var payments = await _unitOfWork.Payments.GetAllAsync();
-            var sixMonthsAgo = DateTime.Now.AddMonths(-6);
-
-            // Use PaymentStatus directly if it's in the same namespace as Payment entity
-            stats.RevenueChart = payments
-                .Where(p => p.PaymentDate >= sixMonthsAgo && p.Status.ToString() == "Completed")
+            var payments = await _context.Payments.AsNoTracking()
+                .Where(p => p.PaymentDate >= startOfChart && p.Status == Domain.Enums.PaymentStatus.Completed)
                 .GroupBy(p => new { p.PaymentDate.Year, p.PaymentDate.Month })
-                .Select(g => new RevenueChartDto
+                .Select(g => new
                 {
-                    Month = $"{g.Key.Month}/{g.Key.Year}",
+                    g.Key.Year,
+                    g.Key.Month,
                     Amount = g.Sum(p => p.Amount)
                 })
-                .OrderBy(r => r.Month)
+                .ToListAsync();
+
+            stats.RevenueChart = payments
+                .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                .Select(x => new RevenueChartDto
+                {
+                    Month = $"{x.Month}/{x.Year}",
+                    Amount = x.Amount
+                })
                 .ToList();
 
             return stats;

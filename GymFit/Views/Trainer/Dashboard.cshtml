@@ -108,9 +108,9 @@
                 data.forEach(function(trainer) {
                     html += `
                         <tr>
-                            <td><strong>${trainer.name}</strong></td>
-                            <td>${trainer.email}</td>
-                            <td><span class="badge bg-info">${trainer.specialization}</span></td>
+                            <td><strong>${escapeHtml(trainer.name)}</strong></td>
+                            <td>${escapeHtml(trainer.email)}</td>
+                            <td><span class="badge bg-info">${escapeHtml(trainer.specialization)}</span></td>
                             <td>${trainer.experienceYears} years</td>
                             <td>${trainer.memberCount} members</td>
                             <td><span class="badge ${trainer.isActive ? 'bg-success' : 'bg-danger'}">

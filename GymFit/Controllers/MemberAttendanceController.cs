@@ -26,6 +26,7 @@ public class MemberAttendanceController : Controller
         var records = await _context.Attendances.AsNoTracking()
             .Where(a => a.Member.UserId == user.Id)
             .OrderByDescending(a => a.CheckInTime)
+            .Take(500)
             .ToListAsync();
         return View(records);
     }

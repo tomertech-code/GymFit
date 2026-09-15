@@ -13,6 +13,7 @@ namespace GymFit.Application.Interfaces
         Task<Member?> GetMemberWithDetailsAsync(int id);
         Task<IEnumerable<Member>> GetActiveMembersAsync();
         Task<Member?> GetMemberByUserIdAsync(string userId);
+        Task<int> CountActiveAsync();
     }
 
 }

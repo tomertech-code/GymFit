@@ -19,6 +19,8 @@ namespace GymFit.Application.DTOs
         public string EmergencyContact { get; set; } = string.Empty;
         public string? AssignedTrainerName { get; set; }
         public string? CurrentPlan { get; set; }
+        public int PrimaryBranchId { get; set; }
+        public int AssignedTrainerId { get; set; }
         public DateTime JoinDate { get; set; }
         public bool IsActive { get; set; }
         // Computed

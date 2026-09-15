@@ -41,14 +41,14 @@
         });
 
         function loadMembers() {
-            ajaxHelper.get('/Admin/Members/GetAll', function(data) {
+            ajaxHelper.get('/Members/GetAll', function(data) {
                 let html = '';
                 data.forEach(function(member) {
                     html += `
                         <tr>
-                            <td>${member.firstName} ${member.lastName}</td>
-                            <td>${member.email}</td>
-                            <td>${member.phoneNumber}</td>
+                            <td>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</td>
+                            <td>${escapeHtml(member.email)}</td>
+                            <td>${escapeHtml(member.phoneNumber)}</td>
                             <td>${new Date(member.joinDate).toLocaleDateString()}</td>
                             <td>
                                 <span class="badge ${member.isActive ? 'bg-success' : 'bg-danger'}">
@@ -73,9 +73,12 @@
             });
         }
 
+        function viewMember(id) { window.location.href = '/Members/Details?id=' + encodeURIComponent(id); }
+        function editMember(id) { window.location.href = '/Members/Edit?id=' + encodeURIComponent(id); }
+
         function deleteMember(id) {
             if (confirm('Are you sure you want to delete this member?')) {
-                ajaxHelper.post('/Admin/Members/Delete', { id: id }, function(response) {
+                ajaxHelper.post('/Members/Delete', { id: id }, function(response) {
                     if (response.success) {
                         showToast('success', response.message);
                         loadMembers();

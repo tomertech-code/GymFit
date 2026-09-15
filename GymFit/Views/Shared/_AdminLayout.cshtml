@@ -101,6 +101,21 @@
                             </a>
                         </li>
                         }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception"))
+                        {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Reports" asp-action="Index"><i class="fas fa-chart-line"></i> Reports</a></li>
+                        }
+                        <li class="nav-item"><a class="nav-link" asp-controller="Notifications" asp-action="Index"><i class="fas fa-bell"></i> Notifications</a></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Equipment" asp-action="Index"><i class="fas fa-dumbbell"></i> Equipment</a></li>
+                        }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Reception") || User.IsInRole("Trainer"))
+                        {
+                        <li class="nav-item"><a class="nav-link" asp-controller="DietPlans" asp-action="Index"><i class="fas fa-utensils"></i> Diet Plans</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Progress" asp-action="Index"><i class="fas fa-chart-line"></i> Progress</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Measurements" asp-action="Index"><i class="fas fa-ruler-combined"></i> Measurements</a></li>
+                        }
                     </ul>
                 </div>
             </nav>

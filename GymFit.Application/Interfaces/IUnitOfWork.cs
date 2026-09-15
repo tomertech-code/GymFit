@@ -12,6 +12,7 @@ namespace GymFit.Application.Interfaces
         IMemberRepository Members { get; }
         ITrainerRepository Trainers { get; }
         IMembershipRepository MembershipPlans { get; }
+        ISubscriptionRepository Subscriptions { get; }
         IAttendanceRepository Attendances { get; }
         IPaymentRepository Payments { get; }
         IWorkoutPlanRepository WorkoutPlans { get; }

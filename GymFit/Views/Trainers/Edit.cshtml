@@ -1,0 +1,39 @@
+@model GymFit.Domain.Entities.Trainer
+@{
+    ViewData["Title"] = "Edit Trainer";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<section class="py-5" style="background:#121212;min-height:100vh;">
+    <div class="container" style="max-width:900px;">
+        <div class="card bg-dark border-secondary shadow-lg">
+            <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                <h2 class="text-white mb-0"><i class="fas fa-user-edit me-2 text-warning"></i>Edit Trainer</h2>
+                <a asp-action="GetAllTrainers" class="btn btn-outline-light">Back</a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label text-white">First Name</label><input value="@Model.User.FirstName" class="form-control" disabled /></div>
+                        <div class="col-md-6"><label class="form-label text-white">Last Name</label><input value="@Model.User.LastName" class="form-control" disabled /></div>
+                        <div class="col-md-6"><label class="form-label text-white">Email</label><input value="@Model.User.Email" class="form-control" disabled /></div>
+                        <div class="col-md-6"><label class="form-label text-white">Phone</label><input value="@Model.User.PhoneNumber" class="form-control" disabled /></div>
+                        <div class="col-md-6"><label asp-for="Specialization" class="form-label text-white"></label><input asp-for="Specialization" class="form-control" required maxlength="150" /></div>
+                        <div class="col-md-6"><label asp-for="ExperienceYears" class="form-label text-white"></label><input asp-for="ExperienceYears" class="form-control" min="0" max="60" required /></div>
+                        <div class="col-12"><label asp-for="Certifications" class="form-label text-white"></label><textarea asp-for="Certifications" class="form-control" maxlength="1000"></textarea></div>
+                        <div class="col-12"><label asp-for="Bio" class="form-label text-white"></label><textarea asp-for="Bio" class="form-control" maxlength="2000"></textarea></div>
+                        <div class="col-md-6"><label asp-for="PrimaryBranchId" class="form-label text-white">Primary Branch</label><select asp-for="PrimaryBranchId" class="form-select" required><option value="">Select branch</option>@foreach (var branch in ViewBag.Branches) {<option value="@branch.Id">@branch.Name (@branch.Code)</option>}</select><span asp-validation-for="PrimaryBranchId" class="text-danger"></span></div>
+                        <div class="col-md-3 form-check ms-2 mt-4"><input asp-for="WorksAtMultipleBranches" class="form-check-input" /><label asp-for="WorksAtMultipleBranches" class="form-check-label text-white"></label></div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button class="btn btn-warning px-4" type="submit">Save Changes</button>
+                        <a asp-action="GetAllTrainers" class="btn btn-outline-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

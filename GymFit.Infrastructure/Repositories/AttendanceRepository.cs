@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +17,11 @@ namespace GymFit.Infrastructure.Repositories
         {
         }
 
+        public async Task<Attendance?> GetOpenAttendanceAsync(int memberId)
+        {
+            return await _context.Attendances.FirstOrDefaultAsync(a => a.MemberId == memberId && a.CheckOutTime == null);
+        }
+
         public async Task<IEnumerable<Attendance>> GetMemberAttendanceAsync(int memberId)
         {
             return await _context.Attendances
@@ -27,9 +32,10 @@ namespace GymFit.Infrastructure.Repositories
 
         public async Task<int> GetTodayAttendanceCountAsync()
         {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
             return await _context.Attendances
-                .CountAsync(a => a.CheckInTime.Date == today);
+                .CountAsync(a => a.CheckInTime >= today && a.CheckInTime < tomorrow);
         }
     }
 }

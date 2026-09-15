@@ -157,7 +157,7 @@
                                         <div class="avatar-circle me-3">
                                             <i class="fas fa-user text-gold"></i>
                                         </div>
-                                        <strong class="text-white">${att.memberName}</strong>
+                                        <strong class="text-white">${escapeHtml(att.memberName)}</strong>
                                     </div>
                                 </td>
                                 <td class="text-white py-4">${att.checkInTime}</td>
@@ -165,7 +165,7 @@
                                 <td class="text-white py-4">${att.duration || '—'}</td>
                                 <td class="py-4">
                                     <span class="badge px-4 py-2 ${att.status === 'Active' ? 'bg-success' : 'bg-secondary'}">
-                                        ${att.status}
+                                        ${escapeHtml(att.status)}
                                     </span>
                                 </td>
                                 <td class="text-center pe-5 py-4">
@@ -189,7 +189,7 @@
             ajaxHelper.get('/Attendance/GetMembers', function (data) {
                 let options = '<option value="">Search or select member...</option>';
                 data.forEach(function (member) {
-                    options += `<option value="${member.id}">${member.name}</option>`;
+                    options += `<option value="${member.id}">${escapeHtml(member.name)}</option>`;
                 });
                 $('#memberSelect').html(options);
             });

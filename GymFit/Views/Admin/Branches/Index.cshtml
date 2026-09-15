@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Branch Management";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -28,6 +28,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="branchForm">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <input type="hidden" id="branchId" name="Id">
 
@@ -138,12 +139,13 @@
         });
 
         function loadBranches() {
-            ajaxHelper.get('/Admin/Branches/GetAll', function(branches) {
+            ajaxHelper.get('/Branches/GetAll', function(branches) {
                 displayBranches(branches);
             });
         }
 
         function displayBranches(branches) {
+            debugger;
             if (branches.length === 0) {
                 $('#branchesGrid').html(`
                     <div class="col-12 text-center">
@@ -166,32 +168,32 @@
                         <div class="branch-card">
                             <div class="branch-header">
                                 <div>
-                                    <h4 class="text-white mb-1">${branch.name}</h4>
+                                    <h4 class="text-white mb-1">${escapeHtml(branch.name)}</h4>
                                     <span class="badge ${statusClass}">${statusText}</span>
                                 </div>
                                 <div class="branch-code">
                                     <small class="text-white-50">CODE:</small><br>
-                                    <strong class="text-danger">${branch.code}</strong>
+                                    <strong class="text-danger">${escapeHtml(branch.code)}</strong>
                                 </div>
                             </div>
 
                             <div class="branch-info">
                                 <div class="info-item">
                                     <i class="fas fa-map-marker-alt text-danger"></i>
-                                    <span>${branch.city}, ${branch.state}</span>
+                                    <span>${escapeHtml(branch.city)}, ${escapeHtml(branch.state)}</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="fas fa-phone text-danger"></i>
-                                    <span>${branch.phoneNumber}</span>
+                                    <span>${escapeHtml(branch.phoneNumber)}</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="fas fa-envelope text-danger"></i>
-                                    <span>${branch.email}</span>
+                                    <span>${escapeHtml(branch.email)}</span>
                                 </div>
                                 ${branch.managerName ? `
                                 <div class="info-item">
                                     <i class="fas fa-user-tie text-danger"></i>
-                                    <span>Manager: ${branch.managerName}</span>
+                                    <span>Manager: ${escapeHtml(branch.managerName)}</span>
                                 </div>
                                 ` : ''}
                             </div>
@@ -199,11 +201,11 @@
                             <div class="branch-stats">
                                 <div class="stat-item">
                                     <i class="fas fa-users text-danger"></i>
-                                    <span>${branch.members ? branch.members.length : 0} Members</span>
+                                    <span>${branch.memberCount || 0} Members</span>
                                 </div>
                                 <div class="stat-item">
                                     <i class="fas fa-dumbbell text-danger"></i>
-                                    <span>${branch.trainers ? branch.trainers.length : 0} Trainers</span>
+                                    <span>${branch.trainerCount || 0} Trainers</span>
                                 </div>
                             </div>
 
@@ -229,30 +231,10 @@
         $('#branchForm').on('submit', function(e) {
             e.preventDefault();
 
-            const formData = {
-                Name: $('[name="Name"]').val(),
-                Code: $('[name="Code"]').val(),
-                Address: $('[name="Address"]').val(),
-                City: $('[name="City"]').val(),
-                State: $('[name="State"]').val(),
-                PinCode: $('[name="PinCode"]').val(),
-                PhoneNumber: $('[name="PhoneNumber"]').val(),
-                Email: $('[name="Email"]').val(),
-                ManagerName: $('[name="ManagerName"]').val(),
-                ManagerPhone: $('[name="ManagerPhone"]').val(),
-                OpeningTime: $('[name="OpeningTime"]').val(),
-                ClosingTime: $('[name="ClosingTime"]').val(),
-                IsActive: $('[name="IsActive"]').is(':checked')
-            };
-
             $.ajax({
-                url: '/Admin/Branches/Create',
+                url: '/Branches/Create',
                 type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                headers: {
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                },
+                data: $(this).serialize(),
                 success: function(response) {
                     if (response.success) {
                         showToast('success', response.message);
@@ -267,38 +249,38 @@
         });
 
         function viewBranch(id) {
-            ajaxHelper.get(`/Admin/Branches/Details?id=${id}`, function(branch) {
+            ajaxHelper.get(`/Branches/Details?id=${id}`, function(branch) {
                 let html = `
                     <div class="branch-details">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <strong class="text-white">Branch Name:</strong>
-                                <p class="text-white-50">${branch.name}</p>
+                                <p class="text-white-50">${escapeHtml(branch.name)}</p>
                             </div>
                             <div class="col-md-6">
                                 <strong class="text-white">Code:</strong>
-                                <p class="text-danger">${branch.code}</p>
+                                <p class="text-danger">${escapeHtml(branch.code)}</p>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
                                 <strong class="text-white">Address:</strong>
-                                <p class="text-white-50">${branch.address}<br>
-                                ${branch.city}, ${branch.state} - ${branch.pinCode}</p>
+                                <p class="text-white-50">${escapeHtml(branch.address)}<br>
+                                ${escapeHtml(branch.city)}, ${escapeHtml(branch.state)} - ${escapeHtml(branch.pinCode)}</p>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <strong class="text-white">Contact:</strong>
                                 <p class="text-white-50">
-                                    <i class="fas fa-phone"></i> ${branch.phoneNumber}<br>
-                                    <i class="fas fa-envelope"></i> ${branch.email}
+                                    <i class="fas fa-phone"></i> ${escapeHtml(branch.phoneNumber)}<br>
+                                    <i class="fas fa-envelope"></i> ${escapeHtml(branch.email)}
                                 </p>
                             </div>
                             <div class="col-md-6">
                                 <strong class="text-white">Timing:</strong>
                                 <p class="text-white-50">
-                                    ${branch.openingTime} - ${branch.closingTime}
+                                    ${escapeHtml(branch.openingTime)} - ${escapeHtml(branch.closingTime)}
                                 </p>
                             </div>
                         </div>
@@ -307,8 +289,8 @@
                             <div class="col-12">
                                 <strong class="text-white">Manager:</strong>
                                 <p class="text-white-50">
-                                    ${branch.managerName}<br>
-                                    <i class="fas fa-phone"></i> ${branch.managerPhone || 'N/A'}
+                                    ${escapeHtml(branch.managerName)}<br>
+                                    <i class="fas fa-phone"></i> ${escapeHtml(branch.managerPhone || 'N/A')}
                                 </p>
                             </div>
                         </div>
@@ -321,13 +303,12 @@
         }
 
         function editBranch(id) {
-            // Implementation for edit
-            showToast('info', 'Edit functionality - Load branch data and populate form');
+            window.location.href = '/Branches/Edit?id=' + encodeURIComponent(id);
         }
 
         function deleteBranch(id) {
             if (confirm('Are you sure you want to delete this branch?')) {
-                ajaxHelper.post('/Admin/Branches/Delete', { id: id }, function(response) {
+                ajaxHelper.post('/Branches/Delete', { id: id }, function(response) {
                     if (response.success) {
                         showToast('success', response.message);
                         loadBranches();

@@ -1,0 +1,23 @@
+@model GymFit.Domain.Entities.Branch
+@{ ViewData["Title"] = "Edit Branch"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+<section class="py-5" style="background:#121212;min-height:100vh;">
+<div class="container" style="max-width:1000px"><div class="card bg-dark border-secondary shadow-lg">
+<div class="card-header border-secondary"><h2 class="text-white mb-0">Edit Branch</h2></div><div class="card-body">
+<form asp-action="Edit" method="post">@Html.AntiForgeryToken()<input asp-for="Id" type="hidden"/><div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="row g-3">
+<div class="col-md-6"><label asp-for="Name" class="form-label text-white"></label><input asp-for="Name" class="form-control" maxlength="150" required /></div>
+<div class="col-md-6"><label asp-for="Code" class="form-label text-white"></label><input asp-for="Code" class="form-control" maxlength="30" required /></div>
+<div class="col-12"><label asp-for="Address" class="form-label text-white"></label><input asp-for="Address" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="City" class="form-label text-white"></label><input asp-for="City" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="State" class="form-label text-white"></label><input asp-for="State" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="PinCode" class="form-label text-white"></label><input asp-for="PinCode" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="PhoneNumber" class="form-label text-white"></label><input asp-for="PhoneNumber" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="Email" class="form-label text-white"></label><input asp-for="Email" type="email" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="ManagerName" class="form-label text-white"></label><input asp-for="ManagerName" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="ManagerPhone" class="form-label text-white"></label><input asp-for="ManagerPhone" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="OpeningTime" class="form-label text-white"></label><input asp-for="OpeningTime" type="time" class="form-control" /></div>
+<div class="col-md-6"><label asp-for="ClosingTime" class="form-label text-white"></label><input asp-for="ClosingTime" type="time" class="form-control" /></div>
+<div class="col-12 form-check"><input asp-for="IsActive" class="form-check-input"/><label asp-for="IsActive" class="form-check-label text-white"></label></div>
+</div><div class="mt-4"><button class="btn btn-warning" type="submit">Save Changes</button> <a asp-action="Index" class="btn btn-outline-light">Cancel</a></div>
+</form></div></div></div></section>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

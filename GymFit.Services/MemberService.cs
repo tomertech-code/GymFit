@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,7 +49,10 @@ namespace GymFit.Services
             try
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null) return false;
+                if (user == null || !user.IsActive) return false;
+
+                var existing = await _unitOfWork.Members.FindAsync(m => m.UserId == user.Id);
+                if (existing.Any()) return false;
 
                 var member = new Member
                 {
@@ -62,12 +65,21 @@ namespace GymFit.Services
                     IsActive = true
                 };
 
-                await _unitOfWork.Members.AddAsync(member);
-                await _unitOfWork.SaveAsync();
+                var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                if (!roleResult.Succeeded)
+                    return false;
 
-                await _userManager.AddToRoleAsync(user, "Member");
-
-                return true;
+                try
+                {
+                    await _unitOfWork.Members.AddAsync(member);
+                    await _unitOfWork.SaveAsync();
+                    return true;
+                }
+                catch
+                {
+                    await _userManager.RemoveFromRoleAsync(user, "Member");
+                    return false;
+                }
             }
             catch
             {
@@ -86,6 +98,7 @@ namespace GymFit.Services
                 member.EmergencyContact = model.EmergencyContact;
                 member.MedicalConditions = model.MedicalConditions;
                 member.AssignedTrainerId = model.AssignedTrainerId;
+                member.PrimaryBranchId = model.PrimaryBranchId;
 
                 var user = await _userManager.FindByIdAsync(member.UserId);
                 if (user != null)
@@ -115,6 +128,9 @@ namespace GymFit.Services
                 if (member == null) return false;
 
                 member.IsActive = false;
+                var user = await _userManager.FindByIdAsync(member.UserId);
+                if (user != null)
+                    user.IsActive = false;
                 _unitOfWork.Members.Update(member);
                 await _unitOfWork.SaveAsync();
 
@@ -128,8 +144,7 @@ namespace GymFit.Services
 
         public async Task<int> GetActiveMembersCountAsync()
         {
-            var members = await _unitOfWork.Members.GetActiveMembersAsync();
-            return members.Count();
+            return await _unitOfWork.Members.CountActiveAsync();
         }
     }
 }

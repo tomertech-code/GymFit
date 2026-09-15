@@ -1,3 +1,8 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
 @model IReadOnlyList<GymFit.Domain.Entities.Subscription>
 @using GymFit.Domain.Entities
 @{ ViewData["Title"] = "Memberships"; var members = (IReadOnlyList<Member>)ViewBag.Members; var plans = (IReadOnlyList<MembershipPlan>)ViewBag.Plans; }

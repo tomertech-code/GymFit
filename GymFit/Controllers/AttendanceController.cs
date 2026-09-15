@@ -1,4 +1,4 @@
-﻿using GymFit.Infrastructure.Data;
+using GymFit.Infrastructure.Data;
 using GymFit.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,12 +30,14 @@ namespace GymFit.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetToday()
         {
-            var today = DateTime.Today;
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
             var attendance = await _context.Attendances
                 .Include(a => a.Member)
                     .ThenInclude(m => m.User)
-                .Where(a => a.CheckInTime.Date == today)
+                .Where(a => a.CheckInTime >= today && a.CheckInTime < tomorrow)
                 .OrderByDescending(a => a.CheckInTime)
+                .Take(500)
                 .Select(a => new
                 {
                     a.Id,
@@ -58,6 +60,9 @@ namespace GymFit.Web.Controllers
             var members = await _context.Members
                 .Include(m => m.User)
                 .Where(m => m.IsActive)
+                .OrderBy(m => m.User.LastName)
+                .ThenBy(m => m.User.FirstName)
+                .Take(500)
                 .Select(m => new
                 {
                     m.Id,

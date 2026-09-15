@@ -34,5 +34,8 @@ namespace GymFit.Domain.Entities
         public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
         public virtual ICollection<WorkoutPlan> WorkoutPlans { get; set; } = new List<WorkoutPlan>();
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public virtual ICollection<DietPlan> DietPlans { get; set; } = new List<DietPlan>();
+        public virtual ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();
+        public virtual ICollection<BodyMeasurement> BodyMeasurements { get; set; } = new List<BodyMeasurement>();
     }
 }

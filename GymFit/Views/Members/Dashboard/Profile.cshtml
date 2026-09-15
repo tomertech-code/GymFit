@@ -1,4 +1,5 @@
 ﻿@model GymFit.Application.DTOs.MemberDto
+@using GymFit.Application.ViewModels
 @{
     ViewData["Title"] = "My Profile";
 }
@@ -10,32 +11,21 @@
                 <h2 class="h4">@Model.FullName</h2>
                 <p class="text-white-50">Member since @Model.JoinDate.ToString("MMM dd, yyyy")</p>
                 <form method="post" asp-action="Profile" asp-antiforgery="true">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    @if (TempData["Success"] is string message)
+                    {
+                        <div class="alert alert-success">@message</div>
+                    }
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">First name</label>
-                            <input class="form-control" value="@Model.FirstName" readonly />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Last name</label>
-                            <input class="form-control" value="@Model.LastName" readonly />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input class="form-control" value="@Model.Email" readonly />
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Phone</label>
-                            <input class="form-control" value="@Model.PhoneNumber" readonly />
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Address</label>
-                            <textarea class="form-control" readonly>@Model.Address</textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Emergency contact</label>
-                            <input class="form-control" value="@Model.EmergencyContact" readonly />
-                        </div>
+                        <div class="col-md-6"><label class="form-label">First name</label><input class="form-control" name="FirstName" value="@Model.FirstName" maxlength="100" required /></div>
+                        <div class="col-md-6"><label class="form-label">Last name</label><input class="form-control" name="LastName" value="@Model.LastName" maxlength="100" required /></div>
+                        <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" value="@Model.Email" readonly /></div>
+                        <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="PhoneNumber" value="@Model.PhoneNumber" maxlength="30" required /></div>
+                        <div class="col-12"><label class="form-label">Address</label><textarea class="form-control" name="Address" maxlength="500" required>@Model.Address</textarea></div>
+                        <div class="col-md-6"><label class="form-label">Emergency contact</label><input class="form-control" name="EmergencyContact" value="@Model.EmergencyContact" maxlength="100" required /></div>
                     </div>
+                    <button class="btn btn-danger mt-4" type="submit">Save Profile</button>
                 </form>
             </div>
         </div>

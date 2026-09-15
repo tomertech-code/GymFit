@@ -30,6 +30,7 @@ public class MemberPaymentsController : Controller
             .Include(p => p.Subscription!).ThenInclude(s => s.MembershipPlan)
             .Where(p => p.Member!.UserId == user.Id)
             .OrderByDescending(p => p.PaymentDate)
+            .Take(500)
             .ToListAsync();
         return View(payments);
     }

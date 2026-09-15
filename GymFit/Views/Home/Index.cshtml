@@ -9,29 +9,35 @@
                 <h1 class="display-3 fw-bold text-white mb-4">
                     TRANSFORM YOUR <span class="text-danger">BODY</span>
                 </h1>
+
                 <p class="lead text-white-50 mb-4">
                     Join the ultimate fitness revolution. State-of-the-art equipment,
                     expert trainers, and a community that pushes you to your limits.
                 </p>
+
                 <div class="d-flex gap-3">
                     <a href="/Account/Register" class="btn btn-danger btn-lg px-5">
                         <i class="fas fa-bolt"></i> START NOW
                     </a>
+
                     <a href="/Home/Plans" class="btn btn-outline-light btn-lg px-5">
                         View Plans
                     </a>
                 </div>
             </div>
+
             <div class="col-lg-6">
                 <div class="hero-stats">
                     <div class="stat-card">
                         <h2 class="text-danger fw-bold">500+</h2>
                         <p>Active Members</p>
                     </div>
+
                     <div class="stat-card">
                         <h2 class="text-danger fw-bold">20+</h2>
                         <p>Expert Trainers</p>
                     </div>
+
                     <div class="stat-card">
                         <h2 class="text-danger fw-bold">24/7</h2>
                         <p>Open Hours</p>
@@ -41,6 +47,98 @@
         </div>
     </div>
 </section>
+
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        /* Gym background image */
+        background-image: linear-gradient( 90deg, rgba(0, 0, 0, 0.90) 0%, rgba(0, 0, 0, 0.72) 45%, rgba(0, 0, 0, 0.45) 100% ), url('/images/gym-bg.png');
+        
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        overflow: hidden;
+    }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient( circle at 80% 50%, rgba(220, 53, 69, 0.20), transparent 40% );
+            pointer-events: none;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        min-width: 160px;
+        padding: 25px 20px;
+        text-align: center;
+        background: rgba(20, 20, 20, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(220, 53, 69, 0.7);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card h2 {
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: rgba(255, 255, 255, 0.75);
+            margin: 0;
+        }
+
+    .hero-section .btn-danger {
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.35);
+        transition: all 0.3s ease;
+    }
+
+        .hero-section .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(220, 53, 69, 0.5);
+        }
+
+    @@media (max-width: 991px) {
+        .hero-section {
+            background-position: center;
+        }
+
+        .hero-stats {
+            margin-top: 40px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .hero-section {
+            background-position: 65% center;
+        }
+
+        .stat-card {
+            min-width: 140px;
+        }
+    }
+</style>
 
 <!-- Owner Message Section -->
 <section class="owner-section py-5 bg-dark">

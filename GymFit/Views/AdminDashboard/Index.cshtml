@@ -3,145 +3,1030 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<section class="py-5" style="background: linear-gradient(to bottom, #121212, #1a1a1a); min-height: 100vh;">
-    <div class="container-fluid px-4">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h1 class="display-5 fw-bold text-white mb-2">
-                    Elite <span class="text-gold">Dashboard</span>
-                </h1>
-                <p class="text-white-60 fs-5 mb-0">Real-time overview of your luxury fitness empire</p>
-            </div>
-            <button type="button" class="btn btn-gold btn-lg px-5 py-3 rounded-pill shadow-gold">
-                <i class="fas fa-download me-2"></i> Export Report
-            </button>
-        </div>
+<section class="dashboard-section">
+    <!-- Subtle animated background -->
+    <div class="dashboard-bg" aria-hidden="true">
+        <div class="glow-blob glow-1"></div>
+        <div class="glow-blob glow-2"></div>
+        <div class="glow-blob glow-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
 
-        <!-- Stats Cards -->
-        <div class="row g-5 mb-5" id="statsCards">
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);"><p class="text-white-70 mb-2 fs-5">Total Elite Members</p><h2 class="display-4 fw-bold text-white mb-0" id="totalMembers">0</h2></div></div>
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #166534, #16a34a);"><p class="text-white-70 mb-2 fs-5">Currently Active</p><h2 class="display-4 fw-bold text-white mb-0" id="activeMembers">0</h2></div></div>
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #d97706, #f59e0b);"><p class="text-white-70 mb-2 fs-5">Today's Check-ins</p><h2 class="display-4 fw-bold text-white mb-0" id="todayAttendance">0</h2></div></div>
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100" style="background: linear-gradient(135deg, #991b1b, #dc2626);"><p class="text-white-70 mb-2 fs-5">Monthly Revenue</p><h2 class="display-4 fw-bold text-white mb-0" id="monthlyRevenue">$0</h2></div></div>
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100 bg-secondary"><p class="text-white-70 mb-2 fs-5">Expired memberships</p><h2 class="display-4 fw-bold text-white mb-0" id="expiredMemberships">0</h2></div></div>
-            <div class="col-xl-3 col-md-6"><div class="stat-card premium-shadow rounded-4 p-5 h-100 bg-dark"><p class="text-white-70 mb-2 fs-5">Today's enquiries</p><h2 class="display-4 fw-bold text-white mb-0" id="todayEnquiries">0</h2></div></div>
-        </div>
-
-        <!-- Main Content: Chart + Recent Members -->
-        <div class="row g-5">
-            <div class="col-lg-8">
-                <div class="card premium-shadow rounded-4 overflow-hidden" style="background: #1a1a1a; border: 1px solid #333;">
-                    <div class="card-header py-4 px-5 d-flex justify-content-between align-items-center" style="background: #121212; border-bottom: 1px solid #333;">
-                        <h3 class="h5 fw-bold text-white mb-0">
-                            <i class="fas fa-chart-line text-gold me-3"></i> Revenue Performance
-                        </h3>
-                        <small class="text-white-50">Last 12 months</small>
+    <div class="container-fluid px-3 px-lg-4 position-relative">
+        <!-- HEADER / HERO -->
+        <header class="dashboard-header mb-4 mb-lg-5 animate-in" style="--delay: 0ms;">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                        <span class="status-badge" aria-label="System status: online">
+                            <span class="status-dot"></span>
+                            SYSTEM ONLINE
+                        </span>
+                        <span class="text-white-50 small d-none d-sm-inline" id="currentDate"></span>
                     </div>
-                    <div class="card-body p-5">
-                        <canvas id="revenueChart" height="400"></canvas>
+                    <h1 class="dashboard-title mb-1">
+                        <span id="greeting">Good Morning</span>, <span class="text-gold">Admin</span>
+                    </h1>
+                    <p class="text-white-60 mb-0">Real-time overview of your luxury fitness empire</p>
+                </div>
+                <button type="button"
+                        class="btn btn-gold btn-export px-4 py-2 rounded-pill"
+                        aria-label="Export dashboard report">
+                    <i class="fas fa-download me-2 btn-icon"></i>
+                    <span>Export Report</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- STAT CARDS -->
+        <div class="row g-3 g-xl-4 mb-4 mb-lg-5" id="statsCards">
+            <!-- Total Elite Members -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 60ms;">
+                <div class="stat-card h-100" data-accent="blue">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Total Members</p>
+                            <h2 class="stat-value" id="totalMembers">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">Elite memberships</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+
+            <!-- Currently Active -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 120ms;">
+                <div class="stat-card h-100" data-accent="green">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-user-check" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Active Now</p>
+                            <h2 class="stat-value" id="activeMembers">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">Currently active</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+
+            <!-- Today's Check-ins -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 180ms;">
+                <div class="stat-card h-100" data-accent="amber">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Today's Check-ins</p>
+                            <h2 class="stat-value" id="todayAttendance">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">Attendance today</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+
+            <!-- Monthly Revenue -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 240ms;">
+                <div class="stat-card h-100" data-accent="gold">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Monthly Revenue</p>
+                            <h2 class="stat-value" id="monthlyRevenue">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">This month</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+
+            <!-- Expired Memberships -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 300ms;">
+                <div class="stat-card h-100" data-accent="red">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-user-clock" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Expired</p>
+                            <h2 class="stat-value" id="expiredMemberships">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">Memberships</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+
+            <!-- Today's Enquiries -->
+            <div class="col-6 col-md-4 col-xl-2 animate-in" style="--delay: 360ms;">
+                <div class="stat-card h-100" data-accent="purple">
+                    <div class="stat-card-inner">
+                        <div class="stat-icon-wrap">
+                            <i class="fas fa-envelope-open-text" aria-hidden="true"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Today's Enquiries</p>
+                            <h2 class="stat-value" id="todayEnquiries">
+                                <span class="skeleton-value"></span>
+                            </h2>
+                            <p class="stat-support">New leads</p>
+                        </div>
+                    </div>
+                    <div class="stat-border"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT: Chart + Recent Members -->
+        <div class="row g-4 mb-4 mb-lg-5">
+            <!-- Revenue Chart -->
+            <div class="col-lg-8 animate-in" style="--delay: 420ms;">
+                <div class="card glass-card h-100">
+                    <div class="card-header glass-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-line text-gold" aria-hidden="true"></i>
+                            <h3 class="h6 fw-semibold text-white mb-0">Revenue Performance</h3>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-subtle">Last 12 Months</span>
+                            <span class="badge badge-gold d-none" id="revenueSummaryBadge"></span>
+                        </div>
+                    </div>
+                    <div class="card-body p-3 p-md-4 position-relative">
+                        <div class="chart-loading" id="chartLoading">
+                            <div class="skeleton-chart"></div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="revenueChart" height="320" aria-label="Revenue performance chart"></canvas>
+                        </div>
+                        <div class="chart-empty d-none" id="chartEmpty">
+                            <i class="fas fa-chart-area fa-2x text-white-50 mb-3"></i>
+                            <p class="text-white-60 mb-0">No revenue data available</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="card premium-shadow rounded-4 overflow-hidden" style="background: #1a1a1a; border: 1px solid #333;">
-                    <div class="card-header py-4 px-5 d-flex justify-content-between align-items-center" style="background: #121212; border-bottom: 1px solid #333;">
-                        <h3 class="h5 fw-bold text-white mb-0">
-                            <i class="fas fa-crown text-gold me-3"></i> New Elite Members
-                        </h3>
+            <!-- Recent Members -->
+            <div class="col-lg-4 animate-in" style="--delay: 480ms;">
+                <div class="card glass-card h-100">
+                    <div class="card-header glass-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-crown text-gold" aria-hidden="true"></i>
+                            <h3 class="h6 fw-semibold text-white mb-0">New Elite Members</h3>
+                        </div>
                         <small class="text-white-50">Recent joins</small>
                     </div>
                     <div class="card-body p-0">
-                        <ul class="list-group list-group-flush" id="recentMembersList">
-                            <li class="list-group-item text-center py-5 text-white-60">
-                                <i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Loading new members...
+                        <ul class="list-group list-group-flush members-list" id="recentMembersList">
+                            <!-- Skeleton rows while loading -->
+                            <li class="list-group-item member-skeleton">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="skeleton-avatar"></div>
+                                    <div class="flex-grow-1">
+                                        <div class="skeleton-line w-60 mb-2"></div>
+                                        <div class="skeleton-line w-40"></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item member-skeleton">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="skeleton-avatar"></div>
+                                    <div class="flex-grow-1">
+                                        <div class="skeleton-line w-55 mb-2"></div>
+                                        <div class="skeleton-line w-35"></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item member-skeleton">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="skeleton-avatar"></div>
+                                    <div class="flex-grow-1">
+                                        <div class="skeleton-line w-50 mb-2"></div>
+                                        <div class="skeleton-line w-45"></div>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- SECOND ANALYTICS SECTION (using existing data only) -->
+        <div class="row g-4 mb-4 mb-lg-5 animate-in" style="--delay: 540ms;">
+            <div class="col-md-4">
+                <div class="card glass-card h-100 analytics-card">
+                    <div class="card-header glass-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-id-card text-gold" aria-hidden="true"></i>
+                            <h3 class="h6 fw-semibold text-white mb-0">Membership Overview</h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="analytics-stats">
+                            <div class="analytics-row">
+                                <span class="text-white-60">Total Members</span>
+                                <strong class="text-white" id="overviewTotal">—</strong>
+                            </div>
+                            <div class="analytics-row">
+                                <span class="text-white-60">Active</span>
+                                <strong class="text-success" id="overviewActive">—</strong>
+                            </div>
+                            <div class="analytics-row">
+                                <span class="text-white-60">Expired</span>
+                                <strong class="text-danger" id="overviewExpired">—</strong>
+                            </div>
+                        </div>
+                        <div class="analytics-empty d-none" id="membershipEmpty">
+                            <i class="fas fa-users-slash text-white-50 mb-2"></i>
+                            <p class="text-white-60 small mb-0">No data available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card h-100 analytics-card">
+                    <div class="card-header glass-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-walking text-gold" aria-hidden="true"></i>
+                            <h3 class="h6 fw-semibold text-white mb-0">Attendance Overview</h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="analytics-stats">
+                            <div class="analytics-row">
+                                <span class="text-white-60">Today's Check-ins</span>
+                                <strong class="text-white" id="overviewAttendance">—</strong>
+                            </div>
+                        </div>
+                        <div class="analytics-empty d-none" id="attendanceEmpty">
+                            <i class="fas fa-calendar-times text-white-50 mb-2"></i>
+                            <p class="text-white-60 small mb-0">No data available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card glass-card h-100 analytics-card">
+                    <div class="card-header glass-header">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-comments text-gold" aria-hidden="true"></i>
+                            <h3 class="h6 fw-semibold text-white mb-0">Enquiries Overview</h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="analytics-stats">
+                            <div class="analytics-row">
+                                <span class="text-white-60">Today's Enquiries</span>
+                                <strong class="text-white" id="overviewEnquiries">—</strong>
+                            </div>
+                        </div>
+                        <div class="analytics-empty d-none" id="enquiriesEmpty">
+                            <i class="fas fa-inbox text-white-50 mb-2"></i>
+                            <p class="text-white-60 small mb-0">No data available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="animate-in" style="--delay: 600ms;">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="fas fa-bolt text-gold" aria-hidden="true"></i>
+                <h3 class="h6 fw-semibold text-white mb-0">Quick Actions</h3>
+            </div>
+            <div class="row g-3">
+                <div class="col-6 col-md-4 col-xl">
+                    <a href="/Admin/Members/Create" class="quick-action-card" aria-label="Add new member">
+                        <div class="qa-icon"><i class="fas fa-user-plus"></i></div>
+                        <span>Add Member</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <a href="/Admin/Attendance" class="quick-action-card" aria-label="Record attendance">
+                        <div class="qa-icon"><i class="fas fa-clipboard-list"></i></div>
+                        <span>Record Attendance</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <a href="/Admin/Payments/Create" class="quick-action-card" aria-label="Add payment">
+                        <div class="qa-icon"><i class="fas fa-credit-card"></i></div>
+                        <span>Add Payment</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <a href="/Admin/DietPlans/Create" class="quick-action-card" aria-label="Create diet plan">
+                        <div class="qa-icon"><i class="fas fa-utensils"></i></div>
+                        <span>Create Diet Plan</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-xl">
+                    <a href="/Admin/Reports" class="quick-action-card" aria-label="View reports">
+                        <div class="qa-icon"><i class="fas fa-file-alt"></i></div>
+                        <span>View Reports</span>
+                    </a>
+                </div>
+            </div>
+            <p class="text-white-50 small mt-2 mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Links use common admin routes. Update hrefs if your routes differ.
+            </p>
+        </div>
     </div>
 </section>
 
 <style>
-    .text-gold {
-        color: #d4af37 !important;
+    /* ========== DESIGN TOKENS ========== */
+    :root {
+        --bg-deep: #0b0b0f;
+        --bg-base: #111116;
+        --bg-elevated: #18181f;
+        --bg-card: rgba(24, 24, 31, 0.85);
+        --gold: #d4af37;
+        --gold-soft: rgba(212, 175, 55, 0.15);
+        --gold-glow: rgba(212, 175, 55, 0.35);
+        --border-subtle: rgba(255, 255, 255, 0.06);
+        --border-gold: rgba(212, 175, 55, 0.25);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --radius-card: 16px;
+        --radius-sm: 10px;
+        --transition-fast: 0.2s ease;
+        --transition-med: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .text-white-70 {
-        color: rgba(255,255,255,0.7);
+    /* ========== BACKGROUND ========== */
+    .dashboard-section {
+        position: relative;
+        min-height: 100vh;
+        background: var(--bg-deep);
+        padding: 1.75rem 0 3rem;
+        overflow-x: hidden;
+    }
+
+    .dashboard-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .glow-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.12;
+        animation: blobFloat 18s ease-in-out infinite;
+    }
+
+    .glow-1 {
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(circle, #d4af37 0%, transparent 70%);
+        top: -120px;
+        right: -80px;
+        animation-delay: 0s;
+    }
+
+    .glow-2 {
+        width: 360px;
+        height: 360px;
+        background: radial-gradient(circle, #2563eb 0%, transparent 70%);
+        bottom: 10%;
+        left: -100px;
+        animation-delay: -6s;
+    }
+
+    .glow-3 {
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, #16a34a 0%, transparent 70%);
+        top: 45%;
+        right: 15%;
+        animation-delay: -12s;
+    }
+
+    .grid-overlay {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    @@keyframes blobFloat {
+        0%, 100% {
+            transform: translate(0, 0) scale(1);
+        }
+
+        33% {
+            transform: translate(20px, -15px) scale(1.05);
+        }
+
+        66% {
+            transform: translate(-15px, 10px) scale(0.97);
+        }
+    }
+
+    /* ========== ENTRANCE ANIMATIONS ========== */
+    .animate-in {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fadeSlideUp 0.55s var(--transition-med) forwards;
+        animation-delay: var(--delay, 0ms);
+    }
+
+    @@keyframes fadeSlideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .animate-in,
+        .glow-blob,
+        .status-dot,
+        .stat-card:hover .stat-icon-wrap i,
+        .btn-export:hover .btn-icon {
+            animation: none !important;
+            transition: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        .stat-card {
+            transition: none;
+        }
+    }
+
+    /* ========== HEADER ========== */
+    .dashboard-header {
+        position: relative;
+        z-index: 1;
+    }
+
+    .dashboard-title {
+        font-size: clamp(1.6rem, 3vw, 2.15rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #4ade80;
+        background: rgba(74, 222, 128, 0.1);
+        border: 1px solid rgba(74, 222, 128, 0.25);
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+        animation: pulseDot 2s ease-out infinite;
+    }
+
+    @@keyframes pulseDot {
+        0% {
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+        }
+    }
+
+    .text-gold {
+        color: var(--gold) !important;
     }
 
     .text-white-60 {
-        color: rgba(255,255,255,0.6);
+        color: var(--text-secondary);
     }
 
     .text-white-50 {
-        color: rgba(255,255,255,0.5);
+        color: var(--text-muted);
     }
 
+    /* Export button */
     .btn-gold {
-        background-color: #d4af37;
-        color: #121212;
+        background: var(--gold);
+        color: #0b0b0f;
         border: none;
         font-weight: 700;
-        transition: all 0.4s ease;
+        font-size: 0.9rem;
+        transition: all var(--transition-med);
+        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.25);
     }
 
-        .btn-gold:hover {
-            background-color: #c19a2b;
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(212,175,55,0.4);
+        .btn-gold:hover,
+        .btn-gold:focus-visible {
+            background: #c9a227;
+            color: #0b0b0f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px var(--gold-glow);
+            outline: none;
         }
 
+        .btn-gold:focus-visible {
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.45), 0 8px 28px var(--gold-glow);
+        }
+
+    .btn-export .btn-icon {
+        transition: transform var(--transition-fast);
+    }
+
+    .btn-export:hover .btn-icon {
+        transform: translateY(2px);
+    }
+
+    /* ========== STAT CARDS ========== */
     .stat-card {
-        transition: all 0.4s ease;
+        position: relative;
+        background: var(--bg-card);
+        border-radius: var(--radius-card);
+        border: 1px solid var(--border-subtle);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        overflow: hidden;
+        transition: transform var(--transition-med), box-shadow var(--transition-med), border-color var(--transition-med);
     }
 
         .stat-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 60px rgba(212,175,55,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+            border-color: var(--border-gold);
         }
 
-    .stat-icon-large {
-        position: absolute;
-        right: -10px;
-        bottom: -20px;
-        font-size: 8rem;
-        pointer-events: none;
+    .stat-card-inner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        padding: 1.15rem 1.1rem;
+        position: relative;
+        z-index: 1;
     }
 
-    .premium-shadow {
-        box-shadow: 0 15px 50px rgba(0,0,0,0.7);
-    }
-
-    .shadow-gold {
-        box-shadow: 0 10px 30px rgba(212,175,55,0.4);
-    }
-
-    .list-group-item {
-        background: transparent;
-        border-color: #333;
-        padding: 1.25rem 1.5rem;
-        transition: background 0.3s ease;
-    }
-
-        .list-group-item:hover {
-            background: rgba(212,175,55,0.08);
-        }
-
-    .avatar-circle-small {
-        width: 45px;
-        height: 45px;
-        background: rgba(212,175,55,0.15);
-        border: 2px solid #d4af37;
-        border-radius: 50%;
+    .stat-icon-wrap {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform var(--transition-med), background var(--transition-med);
+    }
+
+    .stat-card:hover .stat-icon-wrap {
+        transform: scale(1.08) rotate(-4deg);
+    }
+
+    .stat-card[data-accent="blue"] .stat-icon-wrap {
+        color: #60a5fa;
+        background: rgba(37, 99, 235, 0.15);
+    }
+
+    .stat-card[data-accent="green"] .stat-icon-wrap {
+        color: #4ade80;
+        background: rgba(22, 163, 74, 0.15);
+    }
+
+    .stat-card[data-accent="amber"] .stat-icon-wrap {
+        color: #fbbf24;
+        background: rgba(217, 119, 6, 0.15);
+    }
+
+    .stat-card[data-accent="gold"] .stat-icon-wrap {
+        color: var(--gold);
+        background: var(--gold-soft);
+    }
+
+    .stat-card[data-accent="red"] .stat-icon-wrap {
+        color: #f87171;
+        background: rgba(220, 38, 38, 0.15);
+    }
+
+    .stat-card[data-accent="purple"] .stat-icon-wrap {
+        color: #c084fc;
+        background: rgba(147, 51, 234, 0.15);
+    }
+
+    .stat-content {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stat-value {
+        font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.15rem;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stat-support {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .stat-border {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent 40%, rgba(212, 175, 55, 0.2) 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity var(--transition-med);
+        pointer-events: none;
+    }
+
+    .stat-card:hover .stat-border {
+        opacity: 1;
+    }
+
+    /* Skeleton for numbers */
+    .skeleton-value {
+        display: inline-block;
+        width: 3.2rem;
+        height: 1.4rem;
+        border-radius: 6px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+    @@keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* ========== GLASS CARDS ========== */
+    .glass-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-card);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+        transition: border-color var(--transition-med), box-shadow var(--transition-med);
+    }
+
+        .glass-card:hover {
+            border-color: var(--border-gold);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+    .glass-header {
+        background: rgba(17, 17, 22, 0.6);
+        border-bottom: 1px solid var(--border-subtle);
+        padding: 0.9rem 1.15rem;
+    }
+
+    .badge-subtle {
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-subtle);
+        padding: 0.25rem 0.55rem;
+        border-radius: 6px;
+    }
+
+    .badge-gold {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: #0b0b0f;
+        background: var(--gold);
+        padding: 0.25rem 0.55rem;
+        border-radius: 6px;
+    }
+
+    /* Chart area */
+    .chart-wrapper {
+        position: relative;
+        height: 320px;
+        width: 100%;
+    }
+
+    .chart-loading {
+        position: absolute;
+        inset: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .skeleton-chart {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.6s ease-in-out infinite;
+    }
+
+    .chart-empty {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    /* ========== RECENT MEMBERS ========== */
+    .members-list .list-group-item {
+        background: transparent;
+        border-color: var(--border-subtle);
+        padding: 0.9rem 1.15rem;
+        transition: background var(--transition-fast);
+    }
+
+        .members-list .list-group-item:hover {
+            background: rgba(212, 175, 55, 0.06);
+        }
+
+    .member-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        opacity: 0;
+        transform: translateX(-8px);
+        animation: memberSlideIn 0.4s var(--transition-med) forwards;
+    }
+
+    @@keyframes memberSlideIn {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .avatar-initials {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--gold-soft);
+        border: 1.5px solid var(--border-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gold);
+        flex-shrink: 0;
+        letter-spacing: 0.02em;
+    }
+
+    .member-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        line-height: 1.25;
+    }
+
+    .member-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .member-status {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(74, 222, 128, 0.12);
+        color: #4ade80;
+        border: 1px solid rgba(74, 222, 128, 0.25);
+    }
+
+    /* Skeleton members */
+    .member-skeleton .skeleton-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        flex-shrink: 0;
+    }
+
+    .skeleton-line {
+        height: 0.65rem;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+        .skeleton-line.w-60 {
+            width: 60%;
+        }
+
+        .skeleton-line.w-55 {
+            width: 55%;
+        }
+
+        .skeleton-line.w-50 {
+            width: 50%;
+        }
+
+        .skeleton-line.w-45 {
+            width: 45%;
+        }
+
+        .skeleton-line.w-40 {
+            width: 40%;
+        }
+
+        .skeleton-line.w-35 {
+            width: 35%;
+        }
+
+    /* ========== ANALYTICS CARDS ========== */
+    .analytics-card .card-body {
+        padding: 1.15rem;
+    }
+
+    .analytics-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.875rem;
+    }
+
+        .analytics-row:last-child {
+            border-bottom: none;
+        }
+
+    .analytics-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1.5rem 0.5rem;
+    }
+
+    /* ========== QUICK ACTIONS ========== */
+    .quick-action-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        padding: 1.1rem 0.75rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-align: center;
+        transition: all var(--transition-med);
+        height: 100%;
+        min-height: 96px;
+    }
+
+        .quick-action-card:hover,
+        .quick-action-card:focus-visible {
+            color: var(--gold);
+            border-color: var(--border-gold);
+            background: rgba(212, 175, 55, 0.06);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            outline: none;
+        }
+
+        .quick-action-card:focus-visible {
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.35);
+        }
+
+    .qa-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        color: var(--gold);
+        transition: transform var(--transition-fast);
+    }
+
+    .quick-action-card:hover .qa-icon {
+        transform: scale(1.1);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @@media (max-width: 575.98px) {
+        .dashboard-section {
+            padding-top: 1.25rem;
+        }
+
+        .stat-card-inner {
+            padding: 0.95rem 0.85rem;
+            gap: 0.65rem;
+        }
+
+        .stat-icon-wrap {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .btn-export {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .chart-wrapper {
+            height: 260px;
+        }
+    }
+
+    @@media (min-width: 1200px) {
+        .col-xl-2 {
+            flex: 0 0 auto;
+            width: 16.666%;
+        }
     }
 </style>
 
@@ -149,51 +1034,152 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let revenueChart;
-        $(document).ready(function () {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        $(document).ready(function() {
+            setGreetingAndDate();
             loadDashboardStats();
         });
 
-        function loadDashboardStats() {
-            ajaxHelper.get('/AdminDashboard/GetStats', function (data) {
-                // Update stats with formatting
-                $('#totalMembers').text(data.totalMembers.toLocaleString());
-                $('#activeMembers').text(data.activeMembers.toLocaleString());
-                $('#todayAttendance').text(data.todayAttendance.toLocaleString());
-                $('#monthlyRevenue').text('$' + data.monthlyRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-                $('#expiredMemberships').text(data.expiredMemberships.toLocaleString());
-                $('#todayEnquiries').text(data.todayEnquiries.toLocaleString());
+        function setGreetingAndDate() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = 'Good Morning';
+            if (hour >= 12 && hour < 17) greeting = 'Good Afternoon';
+            else if (hour >= 17) greeting = 'Good Evening';
 
-                // Recent Members
-                let membersList = '';
-                if (data.recentMembers.length === 0) {
-                    membersList = '<li class="list-group-item text-center text-white-60 py-5">No recent sign-ups</li>';
+            $('#greeting').text(greeting);
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            $('#currentDate').text(now.toLocaleDateString(undefined, options));
+        }
+
+        function animateCounter(el, endValue, prefix, duration) {
+            if (prefersReducedMotion) {
+                el.textContent = prefix + endValue.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                return;
+            }
+
+            const start = 0;
+            const startTime = performance.now();
+            const isCurrency = prefix === '$';
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease-out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (endValue - start) * eased);
+
+                el.textContent = prefix + current.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
                 } else {
-                    data.recentMembers.forEach(function (member) {
+                    el.textContent = prefix + endValue.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function getInitials(name) {
+            if (!name || typeof name !== 'string') return '?';
+            const parts = name.trim().split(/\s+/).filter(Boolean);
+            if (parts.length === 0) return '?';
+            if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+            return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        function loadDashboardStats() {
+            ajaxHelper.get('/AdminDashboard/GetStats', function(data) {
+                // --- Stats with animated counters ---
+                const totalMembers = data.totalMembers || 0;
+                const activeMembers = data.activeMembers || 0;
+                const todayAttendance = data.todayAttendance || 0;
+                const monthlyRevenue = data.monthlyRevenue || 0;
+                const expiredMemberships = data.expiredMemberships || 0;
+                const todayEnquiries = data.todayEnquiries || 0;
+
+                // Clear skeletons and animate
+                animateCounter(document.getElementById('totalMembers'), totalMembers, '', 900);
+                animateCounter(document.getElementById('activeMembers'), activeMembers, '', 950);
+                animateCounter(document.getElementById('todayAttendance'), todayAttendance, '', 1000);
+                animateCounter(document.getElementById('monthlyRevenue'), monthlyRevenue, '$', 1100);
+                animateCounter(document.getElementById('expiredMemberships'), expiredMemberships, '', 1050);
+                animateCounter(document.getElementById('todayEnquiries'), todayEnquiries, '', 1000);
+
+                // Overview cards (reuse same data)
+                $('#overviewTotal').text(totalMembers.toLocaleString());
+                $('#overviewActive').text(activeMembers.toLocaleString());
+                $('#overviewExpired').text(expiredMemberships.toLocaleString());
+                $('#overviewAttendance').text(todayAttendance.toLocaleString());
+                $('#overviewEnquiries').text(todayEnquiries.toLocaleString());
+
+                // --- Recent Members ---
+                let membersList = '';
+                if (!data.recentMembers || data.recentMembers.length === 0) {
+                    membersList = `
+                                <li class="list-group-item text-center py-5">
+                                    <i class="fas fa-user-slash fa-2x text-white-50 mb-3 d-block"></i>
+                                    <p class="text-white-60 mb-0">No recent sign-ups</p>
+                                </li>`;
+                } else {
+                    data.recentMembers.forEach(function(member, index) {
+                        const name = escapeHtml(member.name || 'Unknown');
+                        const plan = escapeHtml(member.plan || 'Standard');
+                        const joinDate = escapeHtml(member.joinDate || 'Today');
+                        const initials = getInitials(member.name);
+
                         membersList += `
-                            <li class="list-group-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle-small me-3">
-                                        <i class="fas fa-user text-gold"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <strong class="text-white d-block">${member.name}</strong>
-                                        <small class="text-white-60">${member.plan} Plan • Joined ${member.joinDate || 'Today'}</small>
-                                    </div>
-                                </div>
-                            </li>
-                        `;
+                                    <li class="list-group-item">
+                                        <div class="member-row" style="animation-delay: ${index * 60}ms;">
+                                            <div class="avatar-initials" aria-hidden="true">${initials}</div>
+                                            <div class="flex-grow-1 min-w-0">
+                                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                                    <div class="min-w-0">
+                                                        <span class="member-name d-block text-truncate">${name}</span>
+                                                        <span class="member-meta">${plan} Plan • ${joinDate}</span>
+                                                    </div>
+                                                    <span class="member-status flex-shrink-0">New</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>`;
                     });
                 }
                 $('#recentMembersList').html(membersList);
 
-                // Revenue Chart
-                createRevenueChart(data.revenueChart);
+                // --- Revenue Chart ---
+                $('#chartLoading').addClass('d-none');
+
+                if (!data.revenueChart || data.revenueChart.length === 0) {
+                    $('#chartEmpty').removeClass('d-none');
+                    $('.chart-wrapper').addClass('d-none');
+                } else {
+                    $('#chartEmpty').addClass('d-none');
+                    $('.chart-wrapper').removeClass('d-none');
+                    createRevenueChart(data.revenueChart);
+
+                    // Optional summary badge (last month amount if available)
+                    const last = data.revenueChart[data.revenueChart.length - 1];
+                    if (last && typeof last.amount === 'number') {
+                        $('#revenueSummaryBadge')
+                            .text('Latest: $' + last.amount.toLocaleString())
+                            .removeClass('d-none');
+                    }
+                }
             });
         }
 
         function createRevenueChart(data) {
             const ctx = document.getElementById('revenueChart').getContext('2d');
             if (revenueChart) revenueChart.destroy();
+
+            // Gradient fill
+            const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+            gradient.addColorStop(0, 'rgba(212, 175, 55, 0.28)');
+            gradient.addColorStop(1, 'rgba(212, 175, 55, 0.02)');
 
             revenueChart = new Chart(ctx, {
                 type: 'line',
@@ -203,26 +1189,39 @@
                         label: 'Revenue',
                         data: data.map(d => d.amount),
                         borderColor: '#d4af37',
-                        backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
                         tension: 0.4,
                         pointBackgroundColor: '#d4af37',
-                        pointBorderColor: '#d4af37',
-                        pointRadius: 6,
-                        pointHoverRadius: 10,
+                        pointBorderColor: '#0b0b0f',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#d4af37',
+                        pointHoverBorderColor: '#fff',
                         fill: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(26,26,26,0.9)',
+                            backgroundColor: 'rgba(17, 17, 22, 0.95)',
                             titleColor: '#fff',
-                            bodyColor: '#fff',
+                            bodyColor: '#d4af37',
+                            borderColor: 'rgba(212, 175, 55, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
                             callbacks: {
-                                label: function (context) {
+                                label: function(context) {
                                     return 'Revenue: $' + context.parsed.y.toLocaleString();
                                 }
                             }
@@ -231,15 +1230,28 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.04)',
+                                drawBorder: false
+                            },
+                            border: { display: false },
                             ticks: {
-                                color: '#aaa',
+                                color: 'rgba(255, 255, 255, 0.45)',
+                                font: { size: 11 },
+                                padding: 8,
                                 callback: value => '$' + value.toLocaleString()
                             }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { color: '#aaa' }
+                            border: { display: false },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.45)',
+                                font: { size: 11 },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 8
+                            }
                         }
                     }
                 }

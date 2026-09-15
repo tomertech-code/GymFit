@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GymFit.Application.Interfaces;
 using GymFit.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymFit.Services
 {
@@ -22,9 +23,18 @@ namespace GymFit.Services
         {
             try
             {
+                var member = await _unitOfWork.Members.GetByIdAsync(memberId);
+                if (member is null || !member.IsActive || member.PrimaryBranchId <= 0)
+                    return false;
+
+                var existing = await _unitOfWork.Attendances.GetOpenAttendanceAsync(memberId);
+                if (existing is not null)
+                    return false;
+
                 var attendance = new Attendance
                 {
                     MemberId = memberId,
+                    BranchId = member.PrimaryBranchId,
                     CheckInTime = DateTime.UtcNow
                 };
 
@@ -32,6 +42,11 @@ namespace GymFit.Services
                 await _unitOfWork.SaveAsync();
 
                 return true;
+            }
+            catch (DbUpdateException)
+            {
+                // The database unique filtered index is the final concurrency guard.
+                return false;
             }
             catch
             {

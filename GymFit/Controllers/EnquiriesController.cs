@@ -17,6 +17,7 @@ public class EnquiriesController : Controller
         var enquiries = await _context.ContactMessages
             .AsNoTracking()
             .OrderByDescending(message => message.CreatedAt)
+            .Take(500)
             .ToListAsync();
         return View(enquiries);
     }

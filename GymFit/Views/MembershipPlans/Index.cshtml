@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Membership Plans";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -224,17 +224,17 @@
                         const features = plan.features.split(',');
                         let featuresHtml = '';
                         features.forEach(function (feature) {
-                            featuresHtml += `<li><i class="fas fa-check-circle"></i> ${feature.trim()}</li>`;
+                            featuresHtml += `<li><i class="fas fa-check-circle"></i> ${escapeHtml(feature.trim())}</li>`;
                         });
                         html += `
                             <div class="col-lg-4 col-md-6">
                                 <div class="pricing-card ${plan.type === 3 ? 'featured' : ''} h-100 d-flex flex-column">
                                     <div class="text-center mb-4">
-                                        <h3 class="h3 fw-bold text-white">${plan.name}</h3>
+                                        <h3 class="h3 fw-bold text-white">${escapeHtml(plan.name)}</h3>
                                         <div class="price-tag">
                                             <sup>$</sup><span class="price">${plan.price.toFixed(0)}</span><sub>/mo</sub>
                                         </div>
-                                        <p class="text-white-60 mt-3 px-3">${plan.description}</p>
+                                        <p class="text-white-60 mt-3 px-3">${escapeHtml(plan.description)}</p>
                                     </div>
                                     <ul class="features-list flex-grow-1">${featuresHtml}</ul>
                                     <div class="text-center mt-4 mb-3">

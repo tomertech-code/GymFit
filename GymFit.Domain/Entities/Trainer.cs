@@ -31,6 +31,7 @@ namespace GymFit.Domain.Entities
         public virtual ICollection<Member> AssignedMembers { get; set; } = new List<Member>();
         public virtual ICollection<WorkoutPlan> WorkoutPlans { get; set; } = new List<WorkoutPlan>();
         public virtual ICollection<TrainerBranchAssignment> BranchAssignments { get; set; } = new List<TrainerBranchAssignment>();
+        public virtual ICollection<DietPlan> DietPlans { get; set; } = new List<DietPlan>();
     }
     public class TrainerViewModel
     {

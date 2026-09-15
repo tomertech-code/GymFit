@@ -4,6 +4,7 @@ namespace GymFit.Application.ViewModels;
 
 public class WorkoutPlanViewModel
 {
+    public int Id { get; set; }
     [Required, StringLength(150)]
     public string Name { get; set; } = string.Empty;
 

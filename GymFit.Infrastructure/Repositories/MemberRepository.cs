@@ -38,6 +38,8 @@ namespace GymFit.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public Task<int> CountActiveAsync() => _context.Members.AsNoTracking().CountAsync(m => m.IsActive);
+
         public async Task<Member?> GetMemberByUserIdAsync(string userId)
         {
             return await _context.Members

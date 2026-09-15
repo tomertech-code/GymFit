@@ -25,6 +25,14 @@ namespace GymFit.Infrastructure.Data
         public DbSet<Exercise> Exercises { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<Branch> Branches { get; set; }
+        public DbSet<MemberBranchAccess> MemberBranchAccesses { get; set; }
+        public DbSet<TrainerBranchAssignment> TrainerBranchAssignments { get; set; }
+        public DbSet<DietPlan> DietPlans { get; set; }
+        public DbSet<DietMeal> DietMeals { get; set; }
+        public DbSet<ProgressRecord> ProgressRecords { get; set; }
+        public DbSet<BodyMeasurement> BodyMeasurements { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<BranchEquipment> BranchEquipment { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -56,6 +64,10 @@ namespace GymFit.Infrastructure.Data
             // Subscription Configuration
             builder.Entity<Subscription>(entity =>
             {
+                entity.HasIndex(s => s.MemberId)
+                    .HasFilter("[IsActive] = 1")
+                    .IsUnique();
+
                 entity.HasOne(s => s.Member)
                     .WithMany(m => m.Subscriptions)
                     .HasForeignKey(s => s.MemberId)
@@ -72,11 +84,23 @@ namespace GymFit.Infrastructure.Data
             {
                 entity.Property(p => p.Amount)
                     .HasPrecision(18, 2);
+                entity.Property(p => p.TransactionId)
+                    .HasMaxLength(64);
+                entity.HasIndex(p => p.TransactionId)
+                    .IsUnique()
+                    .HasFilter("[TransactionId] IS NOT NULL");
+                entity.HasIndex(p => new { p.MemberId, p.PaymentDate });
+                entity.HasIndex(p => new { p.Status, p.PaymentDate });
 
                 entity.HasOne(p => p.Member)
                     .WithMany(m => m.Payments)
                     .HasForeignKey(p => p.MemberId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(p => p.Branch)
+                    .WithMany()
+                    .HasForeignKey(p => p.BranchId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // MembershipPlan Configuration
@@ -127,9 +151,78 @@ namespace GymFit.Infrastructure.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
+            // Diet plan configuration
+            builder.Entity<DietPlan>(entity =>
+            {
+                entity.Property(x => x.Name)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(x => x.Goal)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.HasIndex(x => new { x.MemberId, x.IsActive });
+
+                entity.HasOne(x => x.Member)
+                    .WithMany(m => m.DietPlans)
+                    .HasForeignKey(x => x.MemberId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Trainer)
+                    .WithMany(t => t.DietPlans)
+                    .HasForeignKey(x => x.TrainerId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+            builder.Entity<DietMeal>(entity =>
+            {
+                entity.Property(x => x.MealType).HasMaxLength(60).IsRequired();
+                entity.Property(x => x.FoodItems).HasMaxLength(1000).IsRequired();
+                entity.HasIndex(x => new { x.DietPlanId, x.MealOrder });
+                entity.HasOne(x => x.DietPlan).WithMany(p => p.Meals).HasForeignKey(x => x.DietPlanId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Progress and measurement configuration
+            builder.Entity<ProgressRecord>(entity =>
+            {
+                entity.Property(x => x.WeightKg).HasPrecision(6, 2);
+                entity.Property(x => x.BodyFatPercentage).HasPrecision(5, 2);
+                entity.Property(x => x.MuscleMassKg).HasPrecision(6, 2);
+                entity.Property(x => x.StrengthScore).HasPrecision(8, 2);
+                entity.HasIndex(x => new { x.MemberId, x.RecordDate });
+                entity.HasOne(x => x.Member).WithMany(m => m.ProgressRecords).HasForeignKey(x => x.MemberId).OnDelete(DeleteBehavior.Cascade);
+            });
+            builder.Entity<BodyMeasurement>(entity =>
+            {
+                entity.Property(x => x.ChestCm).HasPrecision(6, 2);
+                entity.Property(x => x.WaistCm).HasPrecision(6, 2);
+                entity.Property(x => x.HipsCm).HasPrecision(6, 2);
+                entity.Property(x => x.LeftArmCm).HasPrecision(6, 2);
+                entity.Property(x => x.RightArmCm).HasPrecision(6, 2);
+                entity.Property(x => x.LeftThighCm).HasPrecision(6, 2);
+                entity.Property(x => x.RightThighCm).HasPrecision(6, 2);
+                entity.HasIndex(x => new { x.MemberId, x.MeasurementDate });
+                entity.HasOne(x => x.Member).WithMany(m => m.BodyMeasurements).HasForeignKey(x => x.MemberId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<UserNotification>(entity =>
+            {
+                entity.Property(x => x.UserId).HasMaxLength(450).IsRequired();
+                entity.Property(x => x.Title).HasMaxLength(200).IsRequired();
+                entity.Property(x => x.Message).HasMaxLength(2000).IsRequired();
+                entity.Property(x => x.Type).HasMaxLength(40).IsRequired();
+                entity.Property(x => x.Url).HasMaxLength(500);
+                entity.HasIndex(x => new { x.UserId, x.IsRead, x.CreatedAt });
+                entity.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
             // Attendance Configuration
             builder.Entity<Attendance>(entity =>
             {
+                entity.HasIndex(a => a.MemberId)
+                    .HasFilter("[CheckOutTime] IS NULL")
+                    .IsUnique();
+
                 entity.HasOne(a => a.Member)
                     .WithMany(m => m.Attendances)
                     .HasForeignKey(a => a.MemberId)

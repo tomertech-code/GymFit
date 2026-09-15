@@ -134,9 +134,63 @@ namespace GymFit.Infrastructure.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("MemberId")
+                        .IsUnique()
+                        .HasFilter("[CheckOutTime] IS NULL");
 
                     b.ToTable("Attendances");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.BodyMeasurement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("ChestCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal?>("HipsCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal?>("LeftArmCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal?>("LeftThighCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<DateTime>("MeasurementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RightArmCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal?>("RightThighCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<decimal?>("WaistCm")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId", "MeasurementDate");
+
+                    b.ToTable("BodyMeasurements");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.Branch", b =>
@@ -293,6 +347,100 @@ namespace GymFit.Infrastructure.Migrations
                     b.ToTable("ContactMessages");
                 });
 
+            modelBuilder.Entity("GymFit.Domain.Entities.DietMeal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Calories")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DietPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FoodItems")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("MealOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MealType")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DietPlanId", "MealOrder");
+
+                    b.ToTable("DietMeals");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.DietPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarbsGrams")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DailyCalories")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FatGrams")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Goal")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("ProteinGrams")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TrainerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrainerId");
+
+                    b.HasIndex("MemberId", "IsActive");
+
+                    b.ToTable("DietPlans");
+                });
+
             modelBuilder.Entity("GymFit.Domain.Entities.Exercise", b =>
                 {
                     b.Property<int>("Id")
@@ -416,7 +564,7 @@ namespace GymFit.Infrastructure.Migrations
 
                     b.HasIndex("MemberId");
 
-                    b.ToTable("MemberBranchAccess");
+                    b.ToTable("MemberBranchAccesses");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.MembershipPlan", b =>
@@ -484,6 +632,9 @@ namespace GymFit.Infrastructure.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BranchId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
 
@@ -504,17 +655,66 @@ namespace GymFit.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TransactionId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("BranchId1");
 
                     b.HasIndex("SubscriptionId");
 
+                    b.HasIndex("TransactionId")
+                        .IsUnique()
+                        .HasFilter("[TransactionId] IS NOT NULL");
+
+                    b.HasIndex("MemberId", "PaymentDate");
+
+                    b.HasIndex("Status", "PaymentDate");
+
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.ProgressRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("BodyFatPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("MuscleMassKg")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("StrengthScore")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
+
+                    b.Property<decimal?>("WeightKg")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId", "RecordDate");
+
+                    b.ToTable("ProgressRecords");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.Subscription", b =>
@@ -548,7 +748,9 @@ namespace GymFit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("MemberId")
+                        .IsUnique()
+                        .HasFilter("[IsActive] = 1");
 
                     b.HasIndex("MembershipPlanId");
 
@@ -632,7 +834,55 @@ namespace GymFit.Infrastructure.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("TrainerBranchAssignment");
+                    b.ToTable("TrainerBranchAssignments");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.UserNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsRead", "CreatedAt");
+
+                    b.ToTable("UserNotifications");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.WorkoutPlan", b =>
@@ -830,6 +1080,17 @@ namespace GymFit.Infrastructure.Migrations
                     b.Navigation("Member");
                 });
 
+            modelBuilder.Entity("GymFit.Domain.Entities.BodyMeasurement", b =>
+                {
+                    b.HasOne("GymFit.Domain.Entities.Member", "Member")
+                        .WithMany("BodyMeasurements")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
             modelBuilder.Entity("GymFit.Domain.Entities.BranchEquipment", b =>
                 {
                     b.HasOne("GymFit.Domain.Entities.Branch", "Branch")
@@ -839,6 +1100,35 @@ namespace GymFit.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.DietMeal", b =>
+                {
+                    b.HasOne("GymFit.Domain.Entities.DietPlan", "DietPlan")
+                        .WithMany("Meals")
+                        .HasForeignKey("DietPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DietPlan");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.DietPlan", b =>
+                {
+                    b.HasOne("GymFit.Domain.Entities.Member", "Member")
+                        .WithMany("DietPlans")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GymFit.Domain.Entities.Trainer", "Trainer")
+                        .WithMany("DietPlans")
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Trainer");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.Exercise", b =>
@@ -899,10 +1189,14 @@ namespace GymFit.Infrastructure.Migrations
             modelBuilder.Entity("GymFit.Domain.Entities.Payment", b =>
                 {
                     b.HasOne("GymFit.Domain.Entities.Branch", "Branch")
-                        .WithMany("Payments")
+                        .WithMany()
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("GymFit.Domain.Entities.Branch", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("BranchId1");
 
                     b.HasOne("GymFit.Domain.Entities.Member", "Member")
                         .WithMany("Payments")
@@ -919,6 +1213,17 @@ namespace GymFit.Infrastructure.Migrations
                     b.Navigation("Member");
 
                     b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.ProgressRecord", b =>
+                {
+                    b.HasOne("GymFit.Domain.Entities.Member", "Member")
+                        .WithMany("ProgressRecords")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.Subscription", b =>
@@ -976,6 +1281,17 @@ namespace GymFit.Infrastructure.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("Trainer");
+                });
+
+            modelBuilder.Entity("GymFit.Domain.Entities.UserNotification", b =>
+                {
+                    b.HasOne("GymFit.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GymFit.Domain.Entities.WorkoutPlan", b =>
@@ -1068,13 +1384,24 @@ namespace GymFit.Infrastructure.Migrations
                     b.Navigation("Trainers");
                 });
 
+            modelBuilder.Entity("GymFit.Domain.Entities.DietPlan", b =>
+                {
+                    b.Navigation("Meals");
+                });
+
             modelBuilder.Entity("GymFit.Domain.Entities.Member", b =>
                 {
                     b.Navigation("Attendances");
 
+                    b.Navigation("BodyMeasurements");
+
                     b.Navigation("BranchAccesses");
 
+                    b.Navigation("DietPlans");
+
                     b.Navigation("Payments");
+
+                    b.Navigation("ProgressRecords");
 
                     b.Navigation("Subscriptions");
 
@@ -1091,6 +1418,8 @@ namespace GymFit.Infrastructure.Migrations
                     b.Navigation("AssignedMembers");
 
                     b.Navigation("BranchAssignments");
+
+                    b.Navigation("DietPlans");
 
                     b.Navigation("WorkoutPlans");
                 });

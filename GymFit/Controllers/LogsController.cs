@@ -29,6 +29,7 @@ namespace GymFit.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ClearOldLogs(int days = 30)
         {
             await _loggingService.ClearOldLogsAsync(days);
@@ -36,19 +37,6 @@ namespace GymFit.Web.Controllers
             return Json(new { success = true, message = $"Logs older than {days} days have been cleared" });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> TestError()
-        {
-            try
-            {
-                throw new Exception("This is a test error for logging purposes");
-            }
-            catch (Exception ex)
-            {
-                await _loggingService.LogErrorAsync(ex, "Test error triggered by admin");
-                return Json(new { success = true, message = "Test error logged successfully" });
-            }
-        }
     }
 
 }

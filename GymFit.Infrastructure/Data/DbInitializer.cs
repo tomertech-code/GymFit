@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Google.Apis.Admin.Directory.directory_v1.Data;
 using GymFit.Domain.Entities;
 using GymFit.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -33,11 +32,19 @@ namespace GymFit.Infrastructure.Data
                 }
             }
 
-            // Seed Admin User
-            var adminEmail = "admin@gymfit.com";
+            // Seed Admin User only when an explicit password is supplied through configuration/environment.
+            // Never commit a default admin password to source control.
+            var configuration = serviceProvider.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+            var adminEmail = configuration["SeedAdmin:Email"] ?? "admin@gymfit.com";
+            var adminPassword = configuration["SeedAdmin:Password"] ?? Environment.GetEnvironmentVariable("GYMFIT_ADMIN_PASSWORD");
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-            if (adminUser == null)
+            if (adminUser is not null)
+            {
+                if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+            else if (!string.IsNullOrWhiteSpace(adminPassword))
             {
                 var admin = new ApplicationUser
                 {
@@ -46,20 +53,12 @@ namespace GymFit.Infrastructure.Data
                     FirstName = "Admin",
                     LastName = "GymFit",
                     EmailConfirmed = true,
-                    PhoneNumber = "1234567890",
-                    DateOfBirth = new DateTime(1990, 1, 1),
                     IsActive = true
                 };
 
-                var result = await userManager.CreateAsync(admin, "Admin@123");
+                var result = await userManager.CreateAsync(admin, adminPassword);
                 if (result.Succeeded)
-                {
                     await userManager.AddToRoleAsync(admin, "Admin");
-                }
-            }
-            else if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
-            {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
             }
 
             // Seed Membership Plans

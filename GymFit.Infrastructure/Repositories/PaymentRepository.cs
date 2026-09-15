@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +20,8 @@ namespace GymFit.Infrastructure.Repositories
 
         public async Task<decimal> GetMonthlyRevenueAsync()
         {
-            var firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var now = DateTime.UtcNow;
+            var firstDayOfMonth = new DateTime(now.Year, now.Month, 1);
             return await _context.Payments
                 .Where(p => p.PaymentDate >= firstDayOfMonth && p.Status == PaymentStatus.Completed)
                 .SumAsync(p => p.Amount);

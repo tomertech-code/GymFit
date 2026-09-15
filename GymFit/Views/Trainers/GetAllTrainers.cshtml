@@ -1,4 +1,4 @@
-﻿@using GymFit.Domain.Entities
+@using GymFit.Domain.Entities
 @model List<TrainerViewModel>
 @{
     ViewData["Title"] = "Trainers";
@@ -294,14 +294,13 @@
     <script>
         $('#addTrainerForm').on('submit', function (e) {
             e.preventDefault();
-            debugger;
             const btn = $(this).closest('.modal').find('button[type="submit"]');
             const original = btn.html();
             btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Adding...');
 
             // You'll need to adjust the URL and data mapping to match your backend
             $.ajax({
-                url: 'Create', // Adjust to your actual create endpoint
+                url: '@Url.Action("Create", "Trainers")'
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function (response) {

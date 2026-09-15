@@ -62,6 +62,10 @@
                                 {
                                     <li><a class="dropdown-item" asp-controller="Trainer" asp-action="Dashboard">Dashboard</a></li>
                                     <li><a class="dropdown-item" asp-controller="WorkoutPlans" asp-action="Index">Workout plans</a></li>
+                                    <li><a class="dropdown-item" asp-controller="DietPlans" asp-action="Index">Diet plans</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Progress" asp-action="Index">Progress</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Measurements" asp-action="Index">Measurements</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Notifications" asp-action="Index">Notifications</a></li>
                                 }
                                 else if (User.IsInRole("Member"))
                                 {
@@ -70,6 +74,10 @@
                                     <li><a class="dropdown-item" asp-controller="WorkoutPlans" asp-action="Index">My workouts</a></li>
                                     <li><a class="dropdown-item" asp-controller="MemberAttendance" asp-action="Index">My attendance</a></li>
                                     <li><a class="dropdown-item" asp-controller="MemberPayments" asp-action="Index">My payments</a></li>
+                                    <li><a class="dropdown-item" asp-controller="DietPlans" asp-action="Index">My diet</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Progress" asp-action="Index">My progress</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Measurements" asp-action="Index">My measurements</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Notifications" asp-action="Index">Notifications</a></li>
                                 }
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
